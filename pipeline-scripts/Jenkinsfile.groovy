@@ -30,8 +30,6 @@ def buildInfo
 
 def Logger
 
-def currentDir
-
 	
 	stage('Git clone and setup')
 	{
