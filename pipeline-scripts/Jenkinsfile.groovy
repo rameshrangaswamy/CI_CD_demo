@@ -10,8 +10,6 @@ node("NODE_LABEL")
 
 def mavenHome = tool 'maven'
 
-def currentDir
-
 def stageName
 
 def commitHash 
@@ -38,6 +36,8 @@ def Logger
 			stageName = "Git clone and setup"
 			
 			checkout scm
+			
+			def currentDir
 			
 			Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
