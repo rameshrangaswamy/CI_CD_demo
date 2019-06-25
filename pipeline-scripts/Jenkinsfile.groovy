@@ -213,65 +213,7 @@ def Logger
 				Logger.info("Exiting SonarAnalysis stage")
 			}
 	}
-		
-	stage('Deployment')
-	{
-		try
-		{
-				def currentDir
-
-				currentDir = pwd()
-
-				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
-				Logger.info("Entering Deployment stage")
-						
-				ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
-				
-				//PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
-				
-				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
-				
-				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
-				
-				def packageNames = moduleProp['PACKAGE_NAME']
-				
-				packageMap = MiscUtils.stringToMap(packageNames)
-				
-				tarPath = moduleProp['TAR_PATH']
-				
-				def tarPathMap = MiscUtils.stringToMap(tarPath)
-				
-							for(module in currentModules) 
-							{
-								def packageName = MiscUtils.getValueFromMap(packageMap,module)
-								
-								def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
-								
-								println("packageName : $packageName")
-								
-							dir(moduleTarPath)
-							{
-								sh"""
-								#!/bin/bash
-								sshpass -p "12345" scp -r  ~/.jenkins/workspace/PR_PHASE_1/sau-jen/target/sau-0.0.1-SNAPSHOT.war rameshrangaswamy1@34.93.202.223:~/apache-tomcat-8.5.37/webapps/
-								sshpass -p "12345" ssh rameshrangaswamy1@34.93.202.223 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
-								"""
-							}
-						}
-		}
-				catch(Exception exception) 
-			{
-				currentBuild.result = "FAILURE"
-				Logger.error("Deployment : $exception")
-				throw exception
-			}
-			finally
-			{
-				Logger.info("Exiting Deployment stage")
-			}
-	}
-		
 	stage('Publish to Artifactory') 
 	{
 	
@@ -364,4 +306,62 @@ def Logger
 				Logger.info("Exiting Publish to Artifactory stage")
 			}
 	}
+		stage('Deployment')
+	{
+		try
+		{
+				def currentDir
+
+				currentDir = pwd()
+
+				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
+			
+				Logger.info("Entering Deployment stage")
+						
+				ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
+				
+				//PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
+				
+				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
+				
+				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
+				
+				def packageNames = moduleProp['PACKAGE_NAME']
+				
+				packageMap = MiscUtils.stringToMap(packageNames)
+				
+				tarPath = moduleProp['TAR_PATH']
+				
+				def tarPathMap = MiscUtils.stringToMap(tarPath)
+				
+							for(module in currentModules) 
+							{
+								def packageName = MiscUtils.getValueFromMap(packageMap,module)
+								
+								def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
+								
+								println("packageName : $packageName")
+								
+							dir(moduleTarPath)
+							{
+								sh"""
+								#!/bin/bash
+								sshpass -p "12345" scp -r  ~/.jenkins/workspace/PR_PHASE_1/sau-jen/target/sau-0.0.1-SNAPSHOT.war rameshrangaswamy1@34.93.252.221:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" ssh rameshrangaswamy1@34.93.252.221 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
+								"""
+							}
+						}
+		}
+				catch(Exception exception) 
+			{
+				currentBuild.result = "FAILURE"
+				Logger.error("Deployment : $exception")
+				throw exception
+			}
+			finally
+			{
+				Logger.info("Exiting Deployment stage")
+			}
+	}
+	
 }
