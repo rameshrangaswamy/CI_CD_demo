@@ -39,7 +39,7 @@ def Logger
 			
 			checkout scm
 			
-			Logger = load("${currentDir}/pipeline/utils/Logger.groovy")
+			Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
 			Logger.info("Entering Git clone and setup stage")
 			
