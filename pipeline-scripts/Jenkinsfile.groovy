@@ -39,14 +39,14 @@ def Logger
 			
 			def currentDir
 			
+			currentDir = pwd()
+			
 			Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
 			Logger.info("Entering Git clone and setup stage")
 			
 			def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
-			
-			currentDir = pwd()
-			
+
 			MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
 			
 			println("Reading modules.properties : $moduleProp")
