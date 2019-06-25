@@ -100,8 +100,12 @@ def Logger
 	stage('Build & UT')
 	{    
 		try
-		{		
-		    Logger = load("${currentDir}/pipeline/utils/Logger.groovy")
+		{
+			def currentDir
+			
+			currentDir = pwd()
+			
+		        Logger = load("${currentDir}/pipeline/utils/Logger.groovy")
 			
 			Logger.info("Entering Build & UT stage")
 			
@@ -143,6 +147,14 @@ def Logger
 	{    
 		try
 		{		
+			def currentDir
+			
+			currentDir = pwd()
+			
+			Logger = load("${currentDir}/pipeline/utils/Logger.groovy")
+			
+			Logger.info("Entering SonarAnalysis stage")
+			
 			for(module in currentModules)
 			{
 				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
@@ -206,10 +218,14 @@ def Logger
 	{
 		try
 		{
-				println("Entering stage Publish to Artifactory")
-				
+				def currentDir
+
 				currentDir = pwd()
-				
+
+				Logger = load("${currentDir}/pipeline/utils/Logger.groovy")
+			
+				Logger.info("Entering Deployment stage")
+						
 				ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
 				
 				//PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
@@ -261,10 +277,15 @@ def Logger
 	
 		try
 		{
-				println("Entering stage Publish to Artifactory")
 				
+				def currentDir
+
 				currentDir = pwd()
+
+				Logger = load("${currentDir}/pipeline/utils/Logger.groovy")
 				
+				Logger.info("Entering stage Publish to Artifactory")
+			
 				ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
 				
 				PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
