@@ -105,7 +105,7 @@ def buildInfo
 			println("Entering stage Publish to Artifactory")
 			currentDir = pwd()
 			ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
-			//Constants = load("${currentDir}/pipeline-scripts/utils/Constants.groovy")
+			//PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
 			MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
 			moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'				
 			def packageNames = moduleProp['PACKAGE_NAME']
@@ -134,7 +134,7 @@ def buildInfo
 				println("Entering stage Publish to Artifactory")
 				currentDir = pwd()
 				ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
-				Constants = load("${currentDir}/pipeline-scripts/utils/Constants.groovy")
+				PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
 				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
 				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'				
 				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
@@ -176,7 +176,7 @@ def buildInfo
 						server.publishBuildInfo buildInfo
 						//rtMaven.run pom: '/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/$currentModules/pom.xml', goals: clean install, buildInfo: buildInfo
 					}
-					//ArtifactoryUtils.publishCcOneAppPackageMaster(Constants.ARTIFACTORY_REPO, packageName, buildNum)
+					//ArtifactoryUtils.publishCcOneAppPackageMaster(PipeConstants.ARTIFACTORY_REPO, packageName, buildNum)
 						
 			}
 		}
