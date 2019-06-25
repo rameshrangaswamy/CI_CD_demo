@@ -105,7 +105,7 @@ def Logger
 			
 			currentDir = pwd()
 			
-		        Logger = load("${currentDir}/pipeline/utils/Logger.groovy")
+		        Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
 			Logger.info("Entering Build & UT stage")
 			
@@ -151,7 +151,7 @@ def Logger
 			
 			currentDir = pwd()
 			
-			Logger = load("${currentDir}/pipeline/utils/Logger.groovy")
+			Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
 			Logger.info("Entering SonarAnalysis stage")
 			
@@ -222,7 +222,7 @@ def Logger
 
 				currentDir = pwd()
 
-				Logger = load("${currentDir}/pipeline/utils/Logger.groovy")
+				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
 				Logger.info("Entering Deployment stage")
 						
@@ -282,7 +282,7 @@ def Logger
 
 				currentDir = pwd()
 
-				Logger = load("${currentDir}/pipeline/utils/Logger.groovy")
+				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 				
 				Logger.info("Entering stage Publish to Artifactory")
 			
