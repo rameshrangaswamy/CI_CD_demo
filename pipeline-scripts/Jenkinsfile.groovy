@@ -336,7 +336,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${WORKSPACE}/${}/target/${packageName}",
+											"pattern": "${WORKSPACE}/${moduleTarPath}${packageName}",
 											"target": "libs-snapshot-local",
 											"recursive": "false"
 												  }]
@@ -346,7 +346,7 @@ def Logger
 							server.publishBuildInfo buildInfo
 							
 							Logger.info("${WORKSPACE}/${currentModules}/target/${packageName}")
-							Logger.info("${moduleTarPath}/${packageName}")
+							Logger.info("${WORKSPACE}/${moduleTarPath}${packageName}")
 							
 							
 						}
