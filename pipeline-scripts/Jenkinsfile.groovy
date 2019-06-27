@@ -426,8 +426,8 @@ def Logger
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r "${JENKINS_HOME}/workspace/${JOB_NAME}/${moduleTarPath}${packageName}" rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
-								sshpass -p "12345" ssh rameshrangaswamy1@34.93.239.237 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
+								sshpass -p "12345" scp -r "${JENKINS_HOME}/workspace/${JOB_NAME}/${moduleTarPath}${packageName}" rameshrangaswamy1@34.93.202.223:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" ssh rameshrangaswamy1@34.93.202.223 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
 						}
