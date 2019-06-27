@@ -366,7 +366,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${WORKSPACE}/${moduleTarPath}${packageName}",
+											"pattern": "${JENKINS_HOME}/workspace/${JOB_NAME}/${packageName}",
 											"target": "libs-snapshot-local",
 											"recursive": "false"
 												  }]
@@ -375,10 +375,14 @@ def Logger
 							
 							server.publishBuildInfo buildInfo
 							
-							println("${WORKSPACE}/${moduleTarPath}${packageName}")
-							println("${moduleTarPath}")  
-							println("${packageName}") 
-							println("${WORKSPACE}") 
+							//println("${WORKSPACE}/${moduleTarPath}${packageName}")
+							//println("${moduleTarPath}")  
+							//println("${packageName}") 
+							//println("${WORKSPACE}")
+							//JENKINS_HOME :: /home/rameshrangaswamy1/.jenkins
+							//JOB_NAME
+							
+							println("${JENKINS_HOME}/workspace/${JOB_NAME}/${packageName}")
 						}
 					}
 				}
