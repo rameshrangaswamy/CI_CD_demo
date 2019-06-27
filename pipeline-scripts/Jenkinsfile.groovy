@@ -355,11 +355,11 @@ def Logger
 					dir(moduleTarPath)
 					{
 						script
-						{						
-							Logger.info("packageName : $packageName")
+						{
+							println("packageName : $packageName")
 							
 							rtMaven.deployer server: server, snapshotRepo: 'libs-snapshot-local', releaseRepo: 'libs-release-local'
-													
+
 							buildInfo = Artifactory.newBuildInfo()
 							
 							buildInfo.env.capture = true
@@ -367,26 +367,13 @@ def Logger
 							def uploadSpec = """{
 											"files": [{
 											"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war",
-											"target": "libs-snapshot-local",
+											"target": "libs-release-local",
 											"recursive": "false"
 												  }]
 											}"""
 							server.upload spec: uploadSpec, buildInfo: buildInfo
 							
 							server.publishBuildInfo buildInfo
-							
-							//println("${WORKSPACE}/${moduleTarPath}${packageName}")
-							//println("${moduleTarPath}")  
-							//println("${packageName}") 
-							//println("${WORKSPACE}")
-							//JENKINS_HOME :: /home/rameshrangaswamy1/.jenkins
-							//JOB_NAME
-							
-							println("${JENKINS_HOME}/workspace/${JOB_NAME}/${moduleTarPath}${packageName}")
-							
-							
-							///home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}*.tar
-							///home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war
 						}
 					}
 				}
