@@ -345,7 +345,7 @@ def Logger
 							
 							server.publishBuildInfo buildInfo
 							
-							Logger.info("${WORKSPACE}/${JOB_NAME}/${packageName}/target/${packageName}*.war")
+							Logger.info("${WORKSPACE}/${currentModules}/target/${packageName}")
 						}
 					}
 			}
