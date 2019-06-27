@@ -289,7 +289,7 @@ def packageName
 							
 					for(module in currentModules) 
 					{
-							def packageName = MiscUtils.getValueFromMap(packageMap,module)
+							packageName = MiscUtils.getValueFromMap(packageMap,module)
 							
 							def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
 							
@@ -356,7 +356,7 @@ def packageName
 							
 				for(module in currentModules) 
 				{
-					def packageName = MiscUtils.getValueFromMap(packageMap,module)
+					packageName = MiscUtils.getValueFromMap(packageMap,module)
 					
 					def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
 					
@@ -438,7 +438,7 @@ def packageName
 				
 							for(module in currentModules) 
 							{
-								def packageName = MiscUtils.getValueFromMap(packageMap,module)
+								packageName = MiscUtils.getValueFromMap(packageMap,module)
 								
 								def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
 								
