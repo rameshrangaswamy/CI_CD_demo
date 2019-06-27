@@ -393,13 +393,10 @@ def Logger
 							server.publishBuildInfo buildInfo
 							
 						}
-					}
 				}
-				
-		}
+			}
 	
-		
-				catch(Exception exception) 
+			catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
 				Logger.error("Publish to Artifactory : $exception")
