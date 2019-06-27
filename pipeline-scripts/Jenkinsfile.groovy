@@ -358,41 +358,19 @@ def packageName
 					
 					Logger.info("packageName : $packageName")
 					
-					dir(moduleTarPath)
-					{
-							def server = Artifactory.server 'ArtifactDemo'
-
-							def rtMaven = Artifactory.newMavenBuild()
-							
-						script
-						{						
-							Logger.info("packageName : $packageName")
-							
-							rtMaven.tool = 'maven'
-							
-							rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
-													
-							def buildInfo = Artifactory.newBuildInfo()
-							
-							buildInfo.env.capture = true
-							
-							println("${WORKSPACE}/${moduleTarPath}/${packageName}")
-							
-							def uploadSpec = """{
-											"files": [{
-											"pattern": "${WORKSPACE}/${moduleTarPath}/${packageName}",
-											"target": "libs-snapshot-local",
-											"recursive": "false"
-												  }]
-											}"""
-							server.upload spec: uploadSpec, buildInfo: buildInfo 
-							
-							server.publishBuildInfo buildInfo
-							
-							println("${WORKSPACE}/${moduleTarPath}/${packageName}")
-							
-						}
-					}
+					def server = Artifactory.server 'ArtifactDemo'
+					
+					    def uploadSpec =
+									'''{
+									"files": [
+										{
+											"pattern": "resources/Frogger.*",
+											"target": "libs-snapshot-local"
+										}
+									]
+								}'''
+						def buildInfo1 = server.download spec: downloadSpec
+						server.publishBuildInfo buildInfo1
 				}
 				
 		}
