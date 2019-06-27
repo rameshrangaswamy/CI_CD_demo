@@ -97,7 +97,7 @@ def Logger
 		}
 	}
 		
-	stage('Build & UT')
+	stage('Build')
 	{    
 		try
 		{
@@ -105,9 +105,53 @@ def Logger
 			
 			currentDir = pwd()
 			
-		        Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
+			Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
-			Logger.info("Entering Build & UT stage")
+			Logger.info("Entering Build stage")
+			
+			for(module in currentModules)
+			{
+				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
+				
+				def packagePath = moduleProp['CJP_PACKAGEPATH']
+				
+				println("packagePath : $packagePath")
+				
+				packagePathMap = MiscUtils.stringToMap(packagePath)
+				
+				println("packagePathMap : $packagePathMap")
+				
+				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
+								
+				dir(packageBuildPath)
+				{
+					sh "'${mavenHome}/bin/mvn' clean install -Dmaven.test.skip=true"
+				}
+			}
+		}
+				catch(Exception exception) 
+			{
+				currentBuild.result = "FAILURE"
+				Logger.error("Build failed : $exception")
+				throw exception
+			}
+			finally
+			{
+				Logger.info("Exiting Build stage")
+			}
+	}
+	
+	stage('UTs')
+	{    
+		try
+		{
+			def currentDir
+			
+			currentDir = pwd()
+			
+			Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
+			
+			Logger.info("Entering UTs stage")
 			
 			for(module in currentModules)
 			{
@@ -123,23 +167,21 @@ def Logger
 				
 				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
 				
-				//def command = MiscUtils.getBuildCommand(buildCommandMap,module)
-				
 				dir(packageBuildPath)
 				{
-					sh "'${mavenHome}/bin/mvn' clean package"
+					sh "'${mavenHome}/bin/mvn' clean test"
 				}
 			}
 		}
 				catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
-				Logger.error("Build and UTs failed : $exception")
+				Logger.error("UTs failed : $exception")
 				throw exception
 			}
 			finally
 			{
-				Logger.info("Exiting Build and UT stage")
+				Logger.info("Exiting UTs stage")
 			}
 	}
 	
@@ -161,24 +203,20 @@ def Logger
 				
 				def packagePath = moduleProp['CJP_PACKAGEPATH']
 				
-				//println("packagePath : $packagePath")
-				
 				packagePathMap = MiscUtils.stringToMap(packagePath)
 				
 				def sonarBranchName = MiscUtils.getSonarBranchName(ghprbSourceBranch)
-				
-				//println("packagePathMap : $packagePathMap")
-				
+								
 				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
-				
-				//def command = MiscUtils.getBuildCommand(buildCommandMap,module)
 				
 				dir(packageBuildPath)
 				{
 					withSonarQubeEnv('SonarDemo')
 					{
-						//sh "'${mavenHome}/bin/mvn' sonar:sonar"
+						
 						sh "${mavenHome}/bin/mvn -Dsonar.branch.name=${sonarBranchName} sonar:sonar"
+						
+						//sh "'${mavenHome}/bin/mvn' sonar:sonar"
 						//-Dsonar.host.url=http://35.200.203.119:9000 \
 						//-Dsonar.login=bc7ed6c23eabd5e5001bcc733194bf9925c85efc"
 					}
@@ -197,7 +235,6 @@ def Logger
 							
 							throw new Exception("Quality Gate check failed")
 						}
-						println("Quality Gate check passed")
 					}
 				}
 			}
@@ -213,45 +250,27 @@ def Logger
 				Logger.info("Exiting SonarAnalysis stage")
 			}
 	}
-			
-	stage('Publish to Artifactory') 
+	
+	stage('Packaging And Archiving') 
 	{
 	
 		try
 		{
 				
-				def currentDir
-
+				println("Entering stage Publish to Artifactory")
 				currentDir = pwd()
-
-				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
-				
-				Logger.info("Entering stage Publish to Artifactory")
-			
-				ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
-				
-				PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
-				
+				//CjpArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/CjpArtifactoryUtils.groovy")
+				//CjpConstants = load("${currentDir}/pipeline-scripts/utils/CjpConstants.groovy")
 				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
-				
-				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
-				
+				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'				
 				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
-				
 				gitCommit = commitHash.substring(0,7)
-				
 				stageName = "Publish to artifactory"
-				
 				def packageNames = moduleProp['PACKAGE_NAME']
-				
 				packageMap = MiscUtils.stringToMap(packageNames)
-				
 				tarPath = moduleProp['TAR_PATH']
-				
 				def tarPathMap = MiscUtils.stringToMap(tarPath)
-				
-				//rtMaven.deployer
-				
+							
 			for(module in currentModules) 
 			{
 					def packageName = MiscUtils.getValueFromMap(packageMap,module)
@@ -267,34 +286,78 @@ def Logger
 						tar cvf "${packageName}-${gitCommit}-b${buildNum}.tar" *
 						"""
 					}
-					script
-					{
-						//rtMaven.resolver server: server, repo: 'gradle-dev-local'
-						
-						println("packageName : $packageName")
-						
-						rtMaven.deployer server: server, snapshotRepo: 'libs-snapshot-local', releaseRepo: 'libs-release-local'
-						
-						//rtMaven.deployer.artifactDeploymentPatterns.addExclude("pom.xml")
-						
-						buildInfo = Artifactory.newBuildInfo()
-						
-						buildInfo.env.capture = true
-						
-						def uploadSpec = """{
-										"files": [{
-										"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}*.tar",
-										"target": "libs-release-local",
-										"recursive": "false"
-											  }]
-										}"""
-						server.upload spec: uploadSpec, buildInfo: buildInfo
-						server.publishBuildInfo buildInfo
-						//rtMaven.run pom: '/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/$currentModules/pom.xml', goals: clean install, buildInfo: buildInfo
-					}
+
 			}
 		}
-		
+			catch(Exception exception) 
+			{
+				currentBuild.result = "FAILURE"
+				Logger.error("Packaging And Archiving : $exception")
+				throw exception
+			}
+			finally
+			{
+				Logger.info("Exiting Packaging And Archiving")
+			}
+	}
+			
+	stage('Publish to Artifactory') 
+	{
+	
+		try
+		{
+				println("Entering stage Publish to Artifactory")
+				currentDir = pwd()
+				CjpArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/CjpArtifactoryUtils.groovy")
+				CjpConstants = load("${currentDir}/pipeline-scripts/utils/CjpConstants.groovy")
+				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
+				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'				
+				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
+				gitCommit = commitHash.substring(0,7)
+				stageName = "Publish to artifactory"
+				def packageNames = moduleProp['PACKAGE_NAME']
+				packageMap = MiscUtils.stringToMap(packageNames)
+				tarPath = moduleProp['TAR_PATH']
+				def tarPathMap = MiscUtils.stringToMap(tarPath)
+							
+				for(module in currentModules) 
+				{
+					def packageName = MiscUtils.getValueFromMap(packageMap,module)
+					
+					def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
+					
+					Logger.info("packageName : $packageName")
+					
+					dir(moduleTarPath)
+					{
+						script
+						{
+							println("packageName : $packageName")
+							
+							rtMaven.deployer server: server, snapshotRepo: 'libs-snapshot-local', releaseRepo: 'libs-release-local'
+
+							buildInfo = Artifactory.newBuildInfo()
+							
+							buildInfo.env.capture = true
+							
+							def uploadSpec = """{
+											"files": [{
+											"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war",
+											"target": "libs-release-local",
+											"recursive": "true"
+												  }]
+											}"""
+							server.upload spec: uploadSpec, buildInfo: buildInfo
+							
+							server.publishBuildInfo buildInfo
+							
+							println("/home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/${packageName}/target/${packageName}*.tar")
+							
+							sh "ls -al /home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/sau-jen/target/"
+						}
+					}
+				}
+		}
 				catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
@@ -305,8 +368,9 @@ def Logger
 			{
 				Logger.info("Exiting Publish to Artifactory stage")
 			}
-	}
-		stage('Deployment')
+	} 
+
+	stage('Deployment')
 	{
 		try
 		{
@@ -317,10 +381,6 @@ def Logger
 				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
 				Logger.info("Entering Deployment stage")
-						
-				ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
-				
-				//PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
 				
 				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
 				
@@ -334,8 +394,8 @@ def Logger
 				
 				def tarPathMap = MiscUtils.stringToMap(tarPath)
 				
-							for(module in currentModules) 
-							{
+						for(module in currentModules) 
+						{
 								def packageName = MiscUtils.getValueFromMap(packageMap,module)
 								
 								def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
@@ -346,8 +406,8 @@ def Logger
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r  ~/.jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
-								sshpass -p "12345" ssh rameshrangaswamy1@34.93.239.237 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
+								sshpass -p "12345" scp -r  ~/.jenkins/workspace/CI_CD_demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war rameshrangaswamy1@34.93.252.221:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" ssh rameshrangaswamy1@34.93.252.221 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
 						}
@@ -363,5 +423,4 @@ def Logger
 				Logger.info("Exiting Deployment stage")
 			}
 	}
-	
 }
