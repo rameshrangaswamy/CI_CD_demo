@@ -20,10 +20,6 @@ def gitCommit
 
 String buildNum = currentBuild.number.toString()
 
-def server = Artifactory.server 'ArtifactDemo'
-
-def rtMaven = Artifactory.newMavenBuild()
-
 def buildInfo
 
 def Logger
@@ -285,7 +281,11 @@ def Logger
 				currentDir = pwd()
 				
 				stageName = "Publish to artifactory"
+				
+				def server = Artifactory.server 'ArtifactDemo'
 
+				def rtMaven = Artifactory.newMavenBuild()
+				
 				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 				
 				Logger.info("Entering stage Publish to Artifactory")
@@ -328,7 +328,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${WORKSPACE}/${moduleTarPath}*.war",
+											"pattern": "${WORKSPACE}/${moduleTarPath}/${packageName}",
 											"target": "libs-release-local",
 											"recursive": "false"
 												  }]
@@ -336,6 +336,7 @@ def Logger
 							server.upload spec: uploadSpec, buildInfo: buildInfo 
 							
 							server.publishBuildInfo buildInfo
+							
 							println("${WORKSPACE}/${moduleTarPath}${packageName}")
 						}
 					}
