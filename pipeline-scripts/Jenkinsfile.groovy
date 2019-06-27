@@ -313,9 +313,6 @@ def Logger
 				tarPath = moduleProp['TAR_PATH']
 				
 				def tarPathMap = MiscUtils.stringToMap(tarPath)
-				
-				println("${module}")
-				println("${currentModules}")
 							
 			for(module in currentModules) 
 			{
@@ -339,7 +336,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${WORKSPACE}/sau-jen/target/${packageName}",
+											"pattern": "${WORKSPACE}/$currentModules/target/${packageName}",
 											"target": "libs-snapshot-local",
 											"recursive": "false"
 												  }]
