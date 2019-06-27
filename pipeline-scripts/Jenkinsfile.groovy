@@ -340,9 +340,6 @@ def Logger
 					}
 				}
 		}
-				
-	}
-		
 				catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
@@ -355,7 +352,7 @@ def Logger
 			}
 	} 
 
-		stage('Deployment')
+	stage('Deployment')
 	{
 		try
 		{
