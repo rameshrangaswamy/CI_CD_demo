@@ -343,6 +343,10 @@ def Logger
 				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
 				
 				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
+				
+				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
+				
+				gitCommit = commitHash.substring(0,7)
 								
 				def packageNames = moduleProp['PACKAGE_NAME']
 				
@@ -362,6 +366,11 @@ def Logger
 					
 					dir(moduleTarPath)
 					{
+						sh"""
+						#!/bin/bash
+						tar cvf "${packageName}-${gitCommit}-b${buildNum}.tar" *
+						"""
+					}
 						script
 						{						
 							Logger.info("packageName : $packageName")
@@ -374,9 +383,9 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${WORKSPACE}/${moduleTarPath}/${packageName}",
-											"target": "libs-release-local",
-											"recursive": "false"
+											"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}*.tar",
+											"target": "libs-snapshot-local",
+											"recursive": "true"
 												  }]
 											}"""
 							server.upload spec: uploadSpec, buildInfo: buildInfo 
