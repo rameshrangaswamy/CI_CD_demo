@@ -269,7 +269,7 @@ def Logger
 				def packageNames = moduleProp['PACKAGE_NAME']
 				packageMap = MiscUtils.stringToMap(packageNames)
 				tarPath = moduleProp['TAR_PATH']
-				def tarPathMap = MiscUtils.stringToMap(tarPath
+				def tarPathMap = MiscUtils.stringToMap(tarPath)
 							
 			for(module in currentModules) 
 			{
@@ -318,7 +318,7 @@ def Logger
 				def packageNames = moduleProp['PACKAGE_NAME']
 				packageMap = MiscUtils.stringToMap(packageNames)
 				tarPath = moduleProp['TAR_PATH']
-				def tarPathMap = MiscUtils.stringToMap(tarPath
+				def tarPathMap = MiscUtils.stringToMap(tarPath)
 							
 				for(module in currentModules) 
 				{
@@ -351,7 +351,9 @@ def Logger
 							
 							server.publishBuildInfo buildInfo
 							
-							println("/home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/${packageName}/target/${packageName}*.tar")
+							//println("/home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/${packageName}/target/${packageName}*.tar")
+							
+							sh "ls -al /home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/sau-jen/target/"
 						}
 					}
 				}
