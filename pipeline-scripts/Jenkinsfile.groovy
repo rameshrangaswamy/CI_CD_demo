@@ -257,31 +257,19 @@ def Logger
 		try
 		{
 				
-				def currentDir
-
+				println("Entering stage Publish to Artifactory")
 				currentDir = pwd()
-				
-				stageName = "Packaging And Archiving"
-
-				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
-				
-				Logger.info("Entering stage Publish to Artifactory")
-							
+				CjpArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/CjpArtifactoryUtils.groovy")
+				CjpConstants = load("${currentDir}/pipeline-scripts/utils/CjpConstants.groovy")
 				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
-				
-				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
-				
+				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'				
 				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
-				
 				gitCommit = commitHash.substring(0,7)
-				
+				stageName = "Publish to artifactory"
 				def packageNames = moduleProp['PACKAGE_NAME']
-				
 				packageMap = MiscUtils.stringToMap(packageNames)
-				
 				tarPath = moduleProp['TAR_PATH']
-				
-				def tarPathMap = MiscUtils.stringToMap(tarPath)
+				def tarPathMap = MiscUtils.stringToMap(tarPath
 							
 			for(module in currentModules) 
 			{
@@ -318,31 +306,19 @@ def Logger
 	
 		try
 		{
-				def currentDir
-
+				println("Entering stage Publish to Artifactory")
 				currentDir = pwd()
-				
-				stageName = "Publish to artifactory"
-
-				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
-				
-				Logger.info("Entering stage Publish to Artifactory")
-			
-				ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
-				
-				PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
-				
+				CjpArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/CjpArtifactoryUtils.groovy")
+				CjpConstants = load("${currentDir}/pipeline-scripts/utils/CjpConstants.groovy")
 				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
-				
-				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
-								
+				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'				
+				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
+				gitCommit = commitHash.substring(0,7)
+				stageName = "Publish to artifactory"
 				def packageNames = moduleProp['PACKAGE_NAME']
-				
 				packageMap = MiscUtils.stringToMap(packageNames)
-				
 				tarPath = moduleProp['TAR_PATH']
-				
-				def tarPathMap = MiscUtils.stringToMap(tarPath)
+				def tarPathMap = MiscUtils.stringToMap(tarPath
 							
 				for(module in currentModules) 
 				{
@@ -366,7 +342,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/${packageName}/target/${packageName}*.tar",
+											"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war",
 											"target": "libs-release-local",
 											"recursive": "true"
 												  }]
