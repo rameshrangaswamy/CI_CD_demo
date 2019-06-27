@@ -212,6 +212,72 @@ def Logger
 				Logger.info("Exiting SonarAnalysis stage")
 			}
 	}
+	
+	stage('Packaging And Archiving') 
+	{
+	
+		try
+		{
+				
+				def currentDir
+
+				currentDir = pwd()
+				
+				stageName = "Packaging And Archiving"
+
+				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
+				
+				Logger.info("Entering stage Publish to Artifactory")
+			
+				//ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
+				
+				//PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
+				
+				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
+				
+				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
+				
+				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
+				
+				gitCommit = commitHash.substring(0,7)
+				
+				def packageNames = moduleProp['PACKAGE_NAME']
+				
+				packageMap = MiscUtils.stringToMap(packageNames)
+				
+				tarPath = moduleProp['TAR_PATH']
+				
+				def tarPathMap = MiscUtils.stringToMap(tarPath)
+							
+			for(module in currentModules) 
+			{
+					def packageName = MiscUtils.getValueFromMap(packageMap,module)
+					
+					def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
+					
+					println("packageName : $packageName")
+					
+					dir(moduleTarPath)
+					{
+						sh"""
+						#!/bin/bash
+						tar cvf "${packageName}-${gitCommit}-b${buildNum}.tar" *
+						"""
+					}
+
+			}
+		}
+			catch(Exception exception) 
+			{
+				currentBuild.result = "FAILURE"
+				Logger.error("Packaging And Archiving : $exception")
+				throw exception
+			}
+			finally
+			{
+				Logger.info("Exiting Packaging And Archiving")
+			}
+	}
 			
 	stage('Publish to Artifactory') 
 	{
@@ -248,9 +314,7 @@ def Logger
 				tarPath = moduleProp['TAR_PATH']
 				
 				def tarPathMap = MiscUtils.stringToMap(tarPath)
-				
-				//rtMaven.deployer
-				
+							
 			for(module in currentModules) 
 			{
 					def packageName = MiscUtils.getValueFromMap(packageMap,module)
@@ -267,15 +331,11 @@ def Logger
 						"""
 					}
 					script
-					{
-						//rtMaven.resolver server: server, repo: 'gradle-dev-local'
-						
-						println("packageName : $packageName")
+					{						
+						Logger.info("packageName : $packageName")
 						
 						rtMaven.deployer server: server, snapshotRepo: 'libs-snapshot-local', releaseRepo: 'libs-release-local'
-						
-						//rtMaven.deployer.artifactDeploymentPatterns.addExclude("pom.xml")
-						
+												
 						buildInfo = Artifactory.newBuildInfo()
 						
 						buildInfo.env.capture = true
@@ -304,7 +364,8 @@ def Logger
 			{
 				Logger.info("Exiting Publish to Artifactory stage")
 			}
-	}
+	} 
+
 		stage('Deployment')
 	{
 		try
