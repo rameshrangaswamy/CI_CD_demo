@@ -328,12 +328,12 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${WORKSPACE}/${moduleTarPath}${packageName}",
-											"target": "libs-snapshot-local",
+											"pattern": "${WORKSPACE}/${moduleTarPath}*.war",
+											"target": "libs-release-local",
 											"recursive": "false"
 												  }]
 											}"""
-							server.upload spec: uploadSpec, buildInfo: buildInfo
+							server.upload spec: uploadSpec, buildInfo: buildInfo 
 							
 							server.publishBuildInfo buildInfo
 							println("${WORKSPACE}/${moduleTarPath}${packageName}")
