@@ -364,12 +364,12 @@ def packageName
 									'''{
 									"files": [
 										{
-											"pattern": "resources/Frogger.*",
+											"pattern": "target/*.war",
 											"target": "libs-snapshot-local"
 										}
 									]
 								}'''
-						def buildInfo1 = server.download spec: downloadSpec
+						def buildInfo1 = server.uploadSpec spec: uploadSpec
 						server.publishBuildInfo buildInfo1
 				}
 				
