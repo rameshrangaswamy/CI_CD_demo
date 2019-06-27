@@ -376,9 +376,9 @@ def Logger
 							server.publishBuildInfo buildInfo
 							
 							println("${WORKSPACE}/${moduleTarPath}${packageName}")
-							println("${moduleTarPath}")
-							println("${packageName}")
-							println("${WORKSPACE}")
+							println("${moduleTarPath}")  
+							println("${packageName}") 
+							println("${WORKSPACE}") 
 						}
 					}
 				}
@@ -448,5 +448,7 @@ def Logger
 				Logger.info("Exiting Deployment stage")
 			}
 	}
+	
+	println("${WORKSPACE}")
 	
 }
