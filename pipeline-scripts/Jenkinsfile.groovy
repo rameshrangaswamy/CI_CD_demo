@@ -127,7 +127,7 @@ def Logger
 				
 				dir(packageBuildPath)
 				{
-					sh "'${mavenHome}/bin/mvn' clean package"
+					sh "'${mavenHome}/bin/mvn' clean install -Dmaven.test.skip=true"
 				}
 			}
 		}
@@ -344,6 +344,8 @@ def Logger
 							server.upload spec: uploadSpec, buildInfo: buildInfo
 							
 							server.publishBuildInfo buildInfo
+							
+							Logger.info("${WORKSPACE}/${JOB_NAME}/${packageName}/target/${packageName}*.war")
 						}
 					}
 			}
