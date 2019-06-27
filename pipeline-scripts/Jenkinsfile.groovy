@@ -127,7 +127,7 @@ def packageName
 				
 				dir(packageBuildPath)
 				{
-					sh "'${mavenHome}/bin/mvn' clean package -Dmaven.test.skip=true"
+					sh "'${mavenHome}/bin/mvn' clean install -Dmaven.test.skip=true"
 				}
 			}
 		}
@@ -330,10 +330,6 @@ def packageName
 				
 				stageName = "Publish to artifactory"
 				
-				def server = Artifactory.server 'ArtifactDemo'
-
-				def rtMaven = Artifactory.newMavenBuild()
-				
 				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 				
 				Logger.info("Entering stage Publish to Artifactory")
@@ -364,13 +360,19 @@ def packageName
 					
 					dir(moduleTarPath)
 					{
+							def server = Artifactory.server 'ArtifactDemo'
+
+							def rtMaven = Artifactory.newMavenBuild()
+							
 						script
 						{						
 							Logger.info("packageName : $packageName")
 							
-							rtMaven.deployer server: server, snapshotRepo: 'libs-snapshot-local', releaseRepo: 'libs-release-local'
+							rtMaven.tool = 'maven'
+							
+							rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
 													
-							buildInfo = Artifactory.newBuildInfo()
+							def buildInfo = Artifactory.newBuildInfo()
 							
 							buildInfo.env.capture = true
 							
