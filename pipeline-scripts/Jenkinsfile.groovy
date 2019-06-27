@@ -375,7 +375,7 @@ def Logger
 							def uploadSpec = """{
 											"files": [{
 											"pattern": "${WORKSPACE}/${moduleTarPath}/${packageName}",
-											"target": "libs-snapshot-local",
+											"target": "libs-release-local",
 											"recursive": "false"
 												  }]
 											}"""
