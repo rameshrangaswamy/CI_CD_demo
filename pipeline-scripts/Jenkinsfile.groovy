@@ -366,7 +366,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${JENKINS_HOME}/workspace/${JOB_NAME}/${packageName}",
+											"pattern": "${JENKINS_HOME}/workspace/${moduleTarPath}${packageName}",
 											"target": "libs-snapshot-local",
 											"recursive": "false"
 												  }]
@@ -382,7 +382,7 @@ def Logger
 							//JENKINS_HOME :: /home/rameshrangaswamy1/.jenkins
 							//JOB_NAME
 							
-							println("${JENKINS_HOME}/workspace/${JOB_NAME}/${packageName}")
+							println("${JENKINS_HOME}/workspace/${moduleTarPath}${packageName}")
 						}
 					}
 				}
@@ -435,7 +435,7 @@ def Logger
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r "${WORKSPACE}/${moduleTarPath}${packageName}" rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" scp -r "${JENKINS_HOME}/workspace/${moduleTarPath}${packageName}" rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
 								sshpass -p "12345" ssh rameshrangaswamy1@34.93.239.237 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
