@@ -336,7 +336,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "$packageName*.war"
+											"pattern": "${moduleTarPath}/"${packageName}*.war"
 											"target": "libs-snapshot-local",
 											"recursive": "false"
 												  }]
