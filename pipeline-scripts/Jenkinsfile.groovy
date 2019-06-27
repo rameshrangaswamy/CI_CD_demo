@@ -2,7 +2,7 @@
 
 /** provide comment as TRIALTEST to trigger this job */
 
-/** Specifying node on which current build would run */
+//** Specifying node on which current build would run */
 
 node("NODE_LABEL") 
 
@@ -19,6 +19,10 @@ def currentModules
 def gitCommit
 
 String buildNum = currentBuild.number.toString()
+
+def server = Artifactory.server 'ArtifactDemo'
+
+def rtMaven = Artifactory.newMavenBuild()
 
 def buildInfo
 
@@ -71,7 +75,7 @@ def Logger
 			
 			def changedModules = MiscUtils.getModifiedModules(changeSet)
 			
-			def serviceModules = moduleProp['DEMO_MODULES']
+			def serviceModules = moduleProp['CJP_MODULES']
 			
 			def serviceModulesList = serviceModules.split(',')
 			
@@ -84,9 +88,7 @@ def Logger
 			catch(Exception exception) 
 		{
 			currentBuild.result = "FAILURE"
-			
 			Logger.error("Git clone and setup failed : $exception")
-			
 			throw exception
 		}
 		finally
@@ -103,7 +105,7 @@ def Logger
 			
 			currentDir = pwd()
 			
-		    Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
+		        Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
 			Logger.info("Entering Build & UT stage")
 			
@@ -111,7 +113,7 @@ def Logger
 			{
 				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
 				
-				def packagePath = moduleProp['DEMO_PACKAGEPATH']
+				def packagePath = moduleProp['CJP_PACKAGEPATH']
 				
 				println("packagePath : $packagePath")
 				
@@ -125,63 +127,19 @@ def Logger
 				
 				dir(packageBuildPath)
 				{
-					sh "'${mavenHome}/bin/mvn' clean install -Dmaven.test.skip=true"
+					sh "'${mavenHome}/bin/mvn' clean package"
 				}
 			}
 		}
 				catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
-				
 				Logger.error("Build and UTs failed : $exception")
-				
 				throw exception
 			}
 			finally
 			{
 				Logger.info("Exiting Build and UT stage")
-			}
-	}
-	
-		stage('UTs')
-	{    
-		try
-		{
-			def currentDir
-			
-			currentDir = pwd()
-			
-		    Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
-			
-			Logger.info("Entering UTs stage")
-			
-			for(module in currentModules)
-			{
-				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
-				
-				def packagePath = moduleProp['DEMO_PACKAGEPATH']
-				
-				packagePathMap = MiscUtils.stringToMap(packagePath)
-						
-				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
-				
-				dir(packageBuildPath)
-				{
-					sh "'${mavenHome}/bin/mvn' clean test"
-				}
-			}
-		}
-				catch(Exception exception) 
-			{
-				currentBuild.result = "FAILURE"
-				
-				Logger.error("UTs failed : $exception")
-				
-				throw exception
-			}
-			finally
-			{
-				Logger.info("Exiting UTs stage")
 			}
 	}
 	
@@ -201,11 +159,15 @@ def Logger
 			{
 				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
 				
-				def packagePath = moduleProp['DEMO_PACKAGEPATH']
-						
+				def packagePath = moduleProp['CJP_PACKAGEPATH']
+				
+				//println("packagePath : $packagePath")
+				
 				packagePathMap = MiscUtils.stringToMap(packagePath)
 				
 				def sonarBranchName = MiscUtils.getSonarBranchName(ghprbSourceBranch)
+				
+				//println("packagePathMap : $packagePathMap")
 				
 				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
 				
@@ -235,6 +197,7 @@ def Logger
 							
 							throw new Exception("Quality Gate check failed")
 						}
+						println("Quality Gate check passed")
 					}
 				}
 			}
@@ -242,78 +205,12 @@ def Logger
 				catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
-				
 				Logger.error("sonarAnalysis : $exception")
-				
 				throw exception
 			}
 			finally
 			{
 				Logger.info("Exiting SonarAnalysis stage")
-			}
-	}
-	
-	stage('Packaging And Archiving') 
-	{
-	
-		try
-		{
-				
-				def currentDir
-
-				currentDir = pwd()
-				
-				stageName = "Packaging And Archiving"
-
-				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
-				
-				Logger.info("Entering stage Publish to Artifactory")
-							
-				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
-				
-				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
-				
-				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
-				
-				gitCommit = commitHash.substring(0,7)
-				
-				def packageNames = moduleProp['PACKAGE_NAME']
-				
-				packageMap = MiscUtils.stringToMap(packageNames)
-				
-				tarPath = moduleProp['TAR_PATH']
-				
-				def tarPathMap = MiscUtils.stringToMap(tarPath)
-							
-			for(module in currentModules) 
-			{
-					def packageName = MiscUtils.getValueFromMap(packageMap,module)
-					
-					def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
-					
-					println("packageName : $packageName")
-					
-					dir(moduleTarPath)
-					{
-						sh"""
-						#!/bin/bash
-						tar cvf "${packageName}-${gitCommit}-b${buildNum}.tar" *
-						"""
-					}
-
-			}
-		}
-			catch(Exception exception) 
-			{
-				currentBuild.result = "FAILURE"
-				
-				Logger.error("Packaging And Archiving : $exception")
-				
-				throw exception
-			}
-			finally
-			{
-				Logger.info("Exiting Packaging And Archiving")
 			}
 	}
 			
@@ -322,16 +219,11 @@ def Logger
 	
 		try
 		{
+				
 				def currentDir
 
 				currentDir = pwd()
-				
-				stageName = "Publish to artifactory"
-				
-				def server = Artifactory.server 'ArtifactDemo'
 
-				def rtMaven = Artifactory.newMavenBuild()
-				
 				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 				
 				Logger.info("Entering stage Publish to Artifactory")
@@ -347,7 +239,9 @@ def Logger
 				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
 				
 				gitCommit = commitHash.substring(0,7)
-								
+				
+				stageName = "Publish to artifactory"
+				
 				def packageNames = moduleProp['PACKAGE_NAME']
 				
 				packageMap = MiscUtils.stringToMap(packageNames)
@@ -355,14 +249,16 @@ def Logger
 				tarPath = moduleProp['TAR_PATH']
 				
 				def tarPathMap = MiscUtils.stringToMap(tarPath)
-							
-				for(module in currentModules) 
-				{
+				
+				//rtMaven.deployer
+				
+			for(module in currentModules) 
+			{
 					def packageName = MiscUtils.getValueFromMap(packageMap,module)
 					
 					def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
 					
-					Logger.info("packageName : $packageName")
+					println("packageName : $packageName")
 					
 					dir(moduleTarPath)
 					{
@@ -371,32 +267,35 @@ def Logger
 						tar cvf "${packageName}-${gitCommit}-b${buildNum}.tar" *
 						"""
 					}
-						script
-						{						
-							Logger.info("packageName : $packageName")
-							
-							rtMaven.deployer server: server, snapshotRepo: 'libs-snapshot-local', releaseRepo: 'libs-release-local'
-													
-							buildInfo = Artifactory.newBuildInfo()
-							
-							buildInfo.env.capture = true
-							
-							def uploadSpec = """{
-											"files": [{
-											"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}*.tar",
-											"target": "libs-snapshot-local",
-											"recursive": "true"
-												  }]
-											}"""
-							server.upload spec: uploadSpec, buildInfo: buildInfo 
-							
-							server.publishBuildInfo buildInfo
-							
-						}
-				}
+					script
+					{
+						//rtMaven.resolver server: server, repo: 'gradle-dev-local'
+						
+						println("packageName : $packageName")
+						
+						rtMaven.deployer server: server, snapshotRepo: 'libs-snapshot-local', releaseRepo: 'libs-release-local'
+						
+						//rtMaven.deployer.artifactDeploymentPatterns.addExclude("pom.xml")
+						
+						buildInfo = Artifactory.newBuildInfo()
+						
+						buildInfo.env.capture = true
+						
+						def uploadSpec = """{
+										"files": [{
+										"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}*.tar",
+										"target": "libs-release-local",
+										"recursive": "false"
+											  }]
+										}"""
+						server.upload spec: uploadSpec, buildInfo: buildInfo
+						server.publishBuildInfo buildInfo
+						//rtMaven.run pom: '/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/$currentModules/pom.xml', goals: clean install, buildInfo: buildInfo
+					}
 			}
-	
-			catch(Exception exception) 
+		}
+		
+				catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
 				Logger.error("Publish to Artifactory : $exception")
@@ -406,8 +305,7 @@ def Logger
 			{
 				Logger.info("Exiting Publish to Artifactory stage")
 			}
-	} 
-
+	}
 		stage('Deployment')
 	{
 		try
@@ -448,8 +346,8 @@ def Logger
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r  "${WORKSPACE}/${moduleTarPath}${packageName}" rameshrangaswamy1@34.93.252.221:~/apache-tomcat-8.5.37/webapps/
-								sshpass -p "12345" ssh rameshrangaswamy1@34.93.252.221 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
+								sshpass -p "12345" scp -r  ~/.jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" ssh rameshrangaswamy1@34.93.239.237 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
 						}
