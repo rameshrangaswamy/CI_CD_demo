@@ -366,7 +366,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${JENKINS_HOME}/workspace/${JOB_NAME}/${moduleTarPath}${packageName}",
+											"pattern": "/home/rameshrangaswamy1/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war",
 											"target": "libs-snapshot-local",
 											"recursive": "false"
 												  }]
@@ -386,6 +386,7 @@ def Logger
 							
 							
 							///home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}*.tar
+							/home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war
 						}
 					}
 				}
