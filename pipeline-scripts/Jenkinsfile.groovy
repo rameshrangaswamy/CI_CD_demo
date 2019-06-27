@@ -442,7 +442,7 @@ def Logger
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r  "${WORKSPACE}/${moduleTarPath}${packageName}" rameshrangaswamy1@34.93.252.221:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" scp -r  "${WORKSPACE}/${moduleTarPath}/${packageName}" rameshrangaswamy1@34.93.252.221:~/apache-tomcat-8.5.37/webapps/
 								sshpass -p "12345" ssh rameshrangaswamy1@34.93.252.221 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
