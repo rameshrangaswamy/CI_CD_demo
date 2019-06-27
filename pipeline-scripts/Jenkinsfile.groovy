@@ -97,7 +97,7 @@ def Logger
 		}
 	}
 		
-	stage('Build & UT')
+	stage('Build')
 	{    
 		try
 		{
@@ -105,9 +105,53 @@ def Logger
 			
 			currentDir = pwd()
 			
-		        Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
+			Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
-			Logger.info("Entering Build & UT stage")
+			Logger.info("Entering Build stage")
+			
+			for(module in currentModules)
+			{
+				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
+				
+				def packagePath = moduleProp['CJP_PACKAGEPATH']
+				
+				println("packagePath : $packagePath")
+				
+				packagePathMap = MiscUtils.stringToMap(packagePath)
+				
+				println("packagePathMap : $packagePathMap")
+				
+				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
+								
+				dir(packageBuildPath)
+				{
+					sh "'${mavenHome}/bin/mvn' clean install -Dmaven.test.skip=true"
+				}
+			}
+		}
+				catch(Exception exception) 
+			{
+				currentBuild.result = "FAILURE"
+				Logger.error("Build failed : $exception")
+				throw exception
+			}
+			finally
+			{
+				Logger.info("Exiting Build stage")
+			}
+	}
+	
+	stage('UTs')
+	{    
+		try
+		{
+			def currentDir
+			
+			currentDir = pwd()
+			
+			Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
+			
+			Logger.info("Entering UTs stage")
 			
 			for(module in currentModules)
 			{
@@ -123,23 +167,21 @@ def Logger
 				
 				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
 				
-				//def command = MiscUtils.getBuildCommand(buildCommandMap,module)
-				
 				dir(packageBuildPath)
 				{
-					sh "'${mavenHome}/bin/mvn' clean install -Dmaven.test.skip=true"
+					sh "'${mavenHome}/bin/mvn' clean test"
 				}
 			}
 		}
 				catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
-				Logger.error("Build and UTs failed : $exception")
+				Logger.error("UTs failed : $exception")
 				throw exception
 			}
 			finally
 			{
-				Logger.info("Exiting Build and UT stage")
+				Logger.info("Exiting UTs stage")
 			}
 	}
 	
@@ -161,24 +203,20 @@ def Logger
 				
 				def packagePath = moduleProp['CJP_PACKAGEPATH']
 				
-				//println("packagePath : $packagePath")
-				
 				packagePathMap = MiscUtils.stringToMap(packagePath)
 				
 				def sonarBranchName = MiscUtils.getSonarBranchName(ghprbSourceBranch)
-				
-				//println("packagePathMap : $packagePathMap")
-				
+								
 				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
-				
-				//def command = MiscUtils.getBuildCommand(buildCommandMap,module)
 				
 				dir(packageBuildPath)
 				{
 					withSonarQubeEnv('SonarDemo')
 					{
-						//sh "'${mavenHome}/bin/mvn' sonar:sonar"
+						
 						sh "${mavenHome}/bin/mvn -Dsonar.branch.name=${sonarBranchName} sonar:sonar"
+						
+						//sh "'${mavenHome}/bin/mvn' sonar:sonar"
 						//-Dsonar.host.url=http://35.200.203.119:9000 \
 						//-Dsonar.login=bc7ed6c23eabd5e5001bcc733194bf9925c85efc"
 					}
