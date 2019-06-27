@@ -228,11 +228,7 @@ def Logger
 				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 				
 				Logger.info("Entering stage Publish to Artifactory")
-			
-				//ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
-				
-				//PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
-				
+							
 				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
 				
 				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
@@ -301,11 +297,7 @@ def Logger
 				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
 				
 				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
-				
-				//commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
-				
-				//gitCommit = commitHash.substring(0,7)
-				
+								
 				def packageNames = moduleProp['PACKAGE_NAME']
 				
 				packageMap = MiscUtils.stringToMap(packageNames)
@@ -314,8 +306,8 @@ def Logger
 				
 				def tarPathMap = MiscUtils.stringToMap(tarPath)
 							
-			for(module in currentModules) 
-			{
+				for(module in currentModules) 
+				{
 					def packageName = MiscUtils.getValueFromMap(packageMap,module)
 					
 					def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
@@ -344,14 +336,9 @@ def Logger
 							server.upload spec: uploadSpec, buildInfo: buildInfo
 							
 							server.publishBuildInfo buildInfo
-							
-							Logger.info("${WORKSPACE}/${currentModules}/target/${packageName}")
-							Logger.info("${WORKSPACE}/${moduleTarPath}${packageName}")
-							
-							
 						}
 					}
-			}
+				
 		}
 		
 				catch(Exception exception) 
@@ -406,7 +393,7 @@ def Logger
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r  ~/.jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" scp -r  "${WORKSPACE}/${moduleTarPath}${packageName}" rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
 								sshpass -p "12345" ssh rameshrangaswamy1@34.93.239.237 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
