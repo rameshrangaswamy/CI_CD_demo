@@ -259,8 +259,8 @@ def Logger
 				
 				println("Entering stage Publish to Artifactory")
 				currentDir = pwd()
-				CjpArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/CjpArtifactoryUtils.groovy")
-				CjpConstants = load("${currentDir}/pipeline-scripts/utils/CjpConstants.groovy")
+				//CjpArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/CjpArtifactoryUtils.groovy")
+				//CjpConstants = load("${currentDir}/pipeline-scripts/utils/CjpConstants.groovy")
 				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
 				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'				
 				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
