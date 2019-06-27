@@ -75,7 +75,7 @@ def Logger
 			
 			def changedModules = MiscUtils.getModifiedModules(changeSet)
 			
-			def serviceModules = moduleProp['CJP_MODULES']
+			def serviceModules = moduleProp['DEMO_MODULES']
 			
 			def serviceModulesList = serviceModules.split(',')
 			
@@ -113,7 +113,7 @@ def Logger
 			{
 				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
 				
-				def packagePath = moduleProp['CJP_PACKAGEPATH']
+				def packagePath = moduleProp['DEMO_PACKAGEPATH']
 				
 				println("packagePath : $packagePath")
 				
@@ -159,7 +159,7 @@ def Logger
 			{
 				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
 				
-				def packagePath = moduleProp['CJP_PACKAGEPATH']
+				def packagePath = moduleProp['DEMO_PACKAGEPATH']
 				
 				//println("packagePath : $packagePath")
 				
