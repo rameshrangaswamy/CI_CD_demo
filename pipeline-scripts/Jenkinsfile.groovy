@@ -338,8 +338,10 @@ def Logger
 							server.publishBuildInfo buildInfo
 						}
 					}
-				
+				}
 		}
+				
+	}
 		
 				catch(Exception exception) 
 			{
@@ -364,10 +366,6 @@ def Logger
 				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
 				Logger.info("Entering Deployment stage")
-						
-				ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
-				
-				//PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
 				
 				MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
 				
@@ -381,8 +379,8 @@ def Logger
 				
 				def tarPathMap = MiscUtils.stringToMap(tarPath)
 				
-							for(module in currentModules) 
-							{
+						for(module in currentModules) 
+						{
 								def packageName = MiscUtils.getValueFromMap(packageMap,module)
 								
 								def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
