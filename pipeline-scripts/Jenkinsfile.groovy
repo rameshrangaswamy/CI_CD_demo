@@ -336,7 +336,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}.war",
+											"pattern": "$packageName*.war"
 											"target": "libs-snapshot-local",
 											"recursive": "false"
 												  }]
