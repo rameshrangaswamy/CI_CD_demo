@@ -312,6 +312,7 @@ def Logger
 	
 		try
 		{
+				def currentDir
 				println("Entering stage Publish to Artifactory")
 				
 				currentDir = pwd()
