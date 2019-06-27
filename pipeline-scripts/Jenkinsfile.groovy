@@ -24,6 +24,8 @@ def buildInfo
 
 def Logger
 
+def packageName
+
 	
 	stage('Git clone and setup')
 	{
@@ -285,23 +287,23 @@ def Logger
 				
 				def tarPathMap = MiscUtils.stringToMap(tarPath)
 							
-			for(module in currentModules) 
-			{
-					def packageName = MiscUtils.getValueFromMap(packageMap,module)
-					
-					def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
-					
-					println("packageName : $packageName")
-					
-					dir(moduleTarPath)
+					for(module in currentModules) 
 					{
-						sh"""
-						#!/bin/bash
-						tar cvf "${packageName}-${gitCommit}-b${buildNum}.tar" *
-						"""
-					}
+							def packageName = MiscUtils.getValueFromMap(packageMap,module)
+							
+							def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
+							
+							println("packageName : $packageName")
+							
+							dir(moduleTarPath)
+							{
+								sh"""
+								#!/bin/bash
+								tar cvf "${packageName}-${gitCommit}-b${buildNum}.tar" *
+								"""
+							}
 
-			}
+					}
 		}
 			catch(Exception exception) 
 			{
@@ -372,6 +374,8 @@ def Logger
 							
 							buildInfo.env.capture = true
 							
+							println("${WORKSPACE}/${moduleTarPath}/${packageName}")
+							
 							def uploadSpec = """{
 											"files": [{
 											"pattern": "${WORKSPACE}/${moduleTarPath}/${packageName}",
@@ -382,6 +386,8 @@ def Logger
 							server.upload spec: uploadSpec, buildInfo: buildInfo 
 							
 							server.publishBuildInfo buildInfo
+							
+							println("${WORKSPACE}/${moduleTarPath}/${packageName}")
 							
 						}
 					}
