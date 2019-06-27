@@ -338,8 +338,10 @@ def Logger
 							server.publishBuildInfo buildInfo
 						}
 					}
+				}
 				
 		}
+	
 		
 				catch(Exception exception) 
 			{
