@@ -20,7 +20,7 @@ def gitCommit
 
 String buildNum = currentBuild.number.toString()
 
-def buildInfo
+//def buildInfo
 
 def Logger
 
