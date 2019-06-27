@@ -71,7 +71,7 @@ def Logger
 			
 			def changedModules = MiscUtils.getModifiedModules(changeSet)
 			
-			def serviceModules = moduleProp['CJP_MODULES']
+			def serviceModules = moduleProp['DEMO_MODULES']
 			
 			def serviceModulesList = serviceModules.split(',')
 			
@@ -84,7 +84,9 @@ def Logger
 			catch(Exception exception) 
 		{
 			currentBuild.result = "FAILURE"
+			
 			Logger.error("Git clone and setup failed : $exception")
+			
 			throw exception
 		}
 		finally
@@ -101,7 +103,7 @@ def Logger
 			
 			currentDir = pwd()
 			
-		        Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
+		    Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
 			Logger.info("Entering Build & UT stage")
 			
@@ -109,7 +111,7 @@ def Logger
 			{
 				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
 				
-				def packagePath = moduleProp['CJP_PACKAGEPATH']
+				def packagePath = moduleProp['DEMO_PACKAGEPATH']
 				
 				println("packagePath : $packagePath")
 				
@@ -130,12 +132,56 @@ def Logger
 				catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
+				
 				Logger.error("Build and UTs failed : $exception")
+				
 				throw exception
 			}
 			finally
 			{
 				Logger.info("Exiting Build and UT stage")
+			}
+	}
+	
+		stage('UTs')
+	{    
+		try
+		{
+			def currentDir
+			
+			currentDir = pwd()
+			
+		    Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
+			
+			Logger.info("Entering UTs stage")
+			
+			for(module in currentModules)
+			{
+				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
+				
+				def packagePath = moduleProp['DEMO_PACKAGEPATH']
+				
+				packagePathMap = MiscUtils.stringToMap(packagePath)
+						
+				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
+				
+				dir(packageBuildPath)
+				{
+					sh "'${mavenHome}/bin/mvn' clean test"
+				}
+			}
+		}
+				catch(Exception exception) 
+			{
+				currentBuild.result = "FAILURE"
+				
+				Logger.error("UTs failed : $exception")
+				
+				throw exception
+			}
+			finally
+			{
+				Logger.info("Exiting UTs stage")
 			}
 	}
 	
@@ -155,15 +201,11 @@ def Logger
 			{
 				def moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'
 				
-				def packagePath = moduleProp['CJP_PACKAGEPATH']
-				
-				//println("packagePath : $packagePath")
-				
+				def packagePath = moduleProp['DEMO_PACKAGEPATH']
+						
 				packagePathMap = MiscUtils.stringToMap(packagePath)
 				
 				def sonarBranchName = MiscUtils.getSonarBranchName(ghprbSourceBranch)
-				
-				//println("packagePathMap : $packagePathMap")
 				
 				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
 				
@@ -200,7 +242,9 @@ def Logger
 				catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
+				
 				Logger.error("sonarAnalysis : $exception")
+				
 				throw exception
 			}
 			finally
@@ -262,7 +306,9 @@ def Logger
 			catch(Exception exception) 
 			{
 				currentBuild.result = "FAILURE"
+				
 				Logger.error("Packaging And Archiving : $exception")
+				
 				throw exception
 			}
 			finally
@@ -329,7 +375,7 @@ def Logger
 							def uploadSpec = """{
 											"files": [{
 											"pattern": "${WORKSPACE}/${moduleTarPath}/${packageName}",
-											"target": "libs-release-local",
+											"target": "libs-snapshot-local",
 											"recursive": "false"
 												  }]
 											}"""
@@ -337,7 +383,6 @@ def Logger
 							
 							server.publishBuildInfo buildInfo
 							
-							println("${WORKSPACE}/${moduleTarPath}${packageName}")
 						}
 					}
 				}
@@ -397,8 +442,8 @@ def Logger
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r  "${WORKSPACE}/${moduleTarPath}${packageName}" rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
-								sshpass -p "12345" ssh rameshrangaswamy1@34.93.239.237 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
+								sshpass -p "12345" scp -r  "${WORKSPACE}/${moduleTarPath}${packageName}" rameshrangaswamy1@34.93.252.221:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" ssh rameshrangaswamy1@34.93.252.221 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
 						}
