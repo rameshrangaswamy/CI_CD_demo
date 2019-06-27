@@ -325,31 +325,27 @@ def Logger
 					
 					dir(moduleTarPath)
 					{
-						sh"""
-						#!/bin/bash
-						tar cvf "${packageName}-${gitCommit}-b${buildNum}.tar" *
-						"""
-					}
-					script
-					{						
-						Logger.info("packageName : $packageName")
-						
-						rtMaven.deployer server: server, snapshotRepo: 'libs-snapshot-local', releaseRepo: 'libs-release-local'
-												
-						buildInfo = Artifactory.newBuildInfo()
-						
-						buildInfo.env.capture = true
-						
-						def uploadSpec = """{
-										"files": [{
-										"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}*.tar",
-										"target": "libs-release-local",
-										"recursive": "false"
-											  }]
-										}"""
-						server.upload spec: uploadSpec, buildInfo: buildInfo
-						server.publishBuildInfo buildInfo
-						//rtMaven.run pom: '/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/$currentModules/pom.xml', goals: clean install, buildInfo: buildInfo
+						script
+						{						
+							Logger.info("packageName : $packageName")
+							
+							rtMaven.deployer server: server, snapshotRepo: 'libs-snapshot-local', releaseRepo: 'libs-release-local'
+													
+							buildInfo = Artifactory.newBuildInfo()
+							
+							buildInfo.env.capture = true
+							
+							def uploadSpec = """{
+											"files": [{
+											"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}*.tar",
+											"target": "libs-release-local",
+											"recursive": "false"
+												  }]
+											}"""
+							server.upload spec: uploadSpec, buildInfo: buildInfo
+							
+							server.publishBuildInfo buildInfo
+						}
 					}
 			}
 		}
