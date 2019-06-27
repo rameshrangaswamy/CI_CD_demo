@@ -284,10 +284,11 @@ def Logger
 	
 		try
 		{
-				
 				def currentDir
 
 				currentDir = pwd()
+				
+				stageName = "Publish to artifactory"
 
 				Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 				
@@ -301,11 +302,9 @@ def Logger
 				
 				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
 				
-				commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
+				//commitHash =  sh( script: "git rev-parse origin/${env.GIT_BRANCH}",returnStdout: true, )
 				
-				gitCommit = commitHash.substring(0,7)
-				
-				stageName = "Publish to artifactory"
+				//gitCommit = commitHash.substring(0,7)
 				
 				def packageNames = moduleProp['PACKAGE_NAME']
 				
@@ -321,7 +320,7 @@ def Logger
 					
 					def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
 					
-					println("packageName : $packageName")
+					//println("packageName : $packageName")
 					
 					dir(moduleTarPath)
 					{
@@ -337,7 +336,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}*.tar",
+											"pattern": "/home/rameshrangaswamy1/.jenkins/workspace/PR_PHASE_1/${packageName}/target/${packageName}*.war",
 											"target": "libs-release-local",
 											"recursive": "false"
 												  }]
