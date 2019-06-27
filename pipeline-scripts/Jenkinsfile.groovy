@@ -376,6 +376,9 @@ def Logger
 							server.publishBuildInfo buildInfo
 							
 							println("${WORKSPACE}/${moduleTarPath}${packageName}")
+							println("${moduleTarPath}")
+							println("${packageName}")
+							println("${WORKSPACE}")
 						}
 					}
 				}
