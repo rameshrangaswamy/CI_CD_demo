@@ -336,6 +336,7 @@ def Logger
 							server.upload spec: uploadSpec, buildInfo: buildInfo
 							
 							server.publishBuildInfo buildInfo
+							println("${WORKSPACE}/${moduleTarPath}${packageName}")
 						}
 					}
 				}
