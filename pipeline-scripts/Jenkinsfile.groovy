@@ -374,6 +374,8 @@ def Logger
 							server.upload spec: uploadSpec, buildInfo: buildInfo
 							
 							server.publishBuildInfo buildInfo
+							
+							println("/home/rameshrangaswamy1/.jenkins/workspace/CI_CD_Demo/${packageName}/target/${packageName}*.tar")
 						}
 					}
 				}
