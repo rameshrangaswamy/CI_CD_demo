@@ -336,7 +336,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${WORKSPACE}/$currentModules/target/${packageName}",
+											"pattern": "${WORKSPACE}/${currentModules}/target/${packageName}",
 											"target": "libs-snapshot-local",
 											"recursive": "false"
 												  }]
