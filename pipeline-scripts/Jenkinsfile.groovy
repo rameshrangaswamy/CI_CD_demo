@@ -197,7 +197,6 @@ def Logger
 							
 							throw new Exception("Quality Gate check failed")
 						}
-						println("Quality Gate check passed")
 					}
 				}
 			}
