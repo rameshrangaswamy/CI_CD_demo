@@ -313,6 +313,9 @@ def Logger
 				tarPath = moduleProp['TAR_PATH']
 				
 				def tarPathMap = MiscUtils.stringToMap(tarPath)
+				
+				println("${module}")
+				println("${currentModules}")
 							
 			for(module in currentModules) 
 			{
