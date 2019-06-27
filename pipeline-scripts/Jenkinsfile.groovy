@@ -320,7 +320,7 @@ def Logger
 					
 					def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
 					
-					//println("packageName : $packageName")
+					Logger.info("packageName : $packageName")
 					
 					dir(moduleTarPath)
 					{
@@ -336,7 +336,7 @@ def Logger
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${WORKSPACE}/${JOB_NAME}/${packageName}/target/${packageName}*.war",
+											"pattern": "${WORKSPACE}/sau-jen/target/${packageName}",
 											"target": "libs-snapshot-local",
 											"recursive": "false"
 												  }]
