@@ -192,7 +192,7 @@ def buildInfo = Artifactory.newBuildInfo()
 				Logger.info("Exiting UTs stage")
 			}
 	}
-	
+	/*
 	stage('sonarAnalysis')
 	{    
 		try
@@ -259,8 +259,8 @@ def buildInfo = Artifactory.newBuildInfo()
 			{
 				Logger.info("Exiting SonarAnalysis stage")
 			}
-	}
-	
+	}*/
+	/*
 	stage('Packaging And Archiving') 
 	{
 	
@@ -323,8 +323,8 @@ def buildInfo = Artifactory.newBuildInfo()
 			{
 				Logger.info("Exiting Packaging And Archiving")
 			}
-	}
-			
+	}*/
+		/*	
 	stage('Publish to Artifactory') 
 	{
 	
@@ -417,8 +417,8 @@ def buildInfo = Artifactory.newBuildInfo()
 			{
 				Logger.info("Exiting Publish to Artifactory stage")
 			}
-	} 
-
+	} */
+/*
 		stage('Deployment')
 	{
 		try
@@ -475,6 +475,6 @@ def buildInfo = Artifactory.newBuildInfo()
 			{
 				Logger.info("Exiting Deployment stage")
 			}
-	}
+	}*/
 	
 }
