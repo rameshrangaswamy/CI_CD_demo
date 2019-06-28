@@ -103,7 +103,7 @@ def buildInfo = Artifactory.newBuildInfo()
 		}
 	}
 		
-	stage('Build & UT')
+	stage('Build')
 	{    
 		try
 		{
@@ -113,7 +113,7 @@ def buildInfo = Artifactory.newBuildInfo()
 			
 		    Logger = load("${currentDir}/pipeline-scripts/utils/Logger.groovy")
 			
-			Logger.info("Entering Build & UT stage")
+			Logger.info("Entering Build stage")
 			
 			for(module in currentModules)
 			{
@@ -141,17 +141,17 @@ def buildInfo = Artifactory.newBuildInfo()
 			{
 				currentBuild.result = "FAILURE"
 				
-				Logger.error("Build and UTs failed : $exception")
+				Logger.error("Build failed : $exception")
 				
 				throw exception
 			}
 			finally
 			{
-				Logger.info("Exiting Build and UT stage")
+				Logger.info("Exiting Build stage")
 			}
 	}
 	
-		stage('UTs')
+	stage('UTs')
 	{    
 		try
 		{
@@ -229,7 +229,7 @@ def buildInfo = Artifactory.newBuildInfo()
 						//-Dsonar.login=bc7ed6c23eabd5e5001bcc733194bf9925c85efc"
 					}
 			
-					println("Waiting for SonarQube Quality evaluation response")
+					Logger.info("Waiting for SonarQube Quality evaluation response")
 					
 					timeout(time: 1, unit: 'HOURS')
 					{
@@ -251,7 +251,7 @@ def buildInfo = Artifactory.newBuildInfo()
 			{
 				currentBuild.result = "FAILURE"
 				
-				Logger.error("sonarAnalysis : $exception")
+				Logger.error("Quality gate failed: $exception")
 				
 				throw exception
 			}
