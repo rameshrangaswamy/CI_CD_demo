@@ -381,6 +381,7 @@ def packageName
 								}"""
 								// Upload to Artifactory.
 								server.upload spec: uploadSpec, buildInfo: buildInfo
+						println("$uploadSpec")
 
 								//buildInfo.retention maxBuilds: 10, maxDays: 7, deleteBuildArtifacts: true
 								// Publish build info.
