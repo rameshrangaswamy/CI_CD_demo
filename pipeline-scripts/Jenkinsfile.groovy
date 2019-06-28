@@ -362,6 +362,7 @@ def packageName
 					{
 								def server = Artifactory.server "ArtifactDemo"
 								def buildInfo = Artifactory.newBuildInfo()
+								def rtMaven = Artifactory.newMavenBuild()
 								buildInfo.env.capture = true
 								buildInfo.env.collect()
 
