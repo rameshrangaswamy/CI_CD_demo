@@ -463,12 +463,7 @@ def DEPLOY_HOST
 							{
 							
 								copyPackageToInstaller(packageName,SSH_USER_NAME,DEPLOY_HOST)
-								
-								#sh"""
-								#!/bin/bash
-								#sshpass -p "12345" scp -r -v -o 'StrictHostKeyChecking no' /home/rameshrangaswamy1/workspace/CI_CD_Demo/${packageName}/target/*.war rameshrangaswamy1@34.93.252.221:~/apache-tomcat-8.5.42/webapps/
-								#sshpass -p "12345" ssh -v -o 'StrictHostKeyChecking no' rameshrangaswamy1@34.93.252.221 "/home/rameshrangaswamy1/apache-tomcat-8.5.42/bin/startup.sh"
-								#"""
+						
 							}
 						}
 		}
