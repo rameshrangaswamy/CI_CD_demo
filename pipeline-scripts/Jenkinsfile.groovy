@@ -26,6 +26,12 @@ def Logger
 
 def packageName
 
+def moduleTarPath
+
+def server = Artifactory.server "ArtifactDemo"
+
+def buildInfo = Artifactory.newBuildInfo()
+
 	
 	stage('Git clone and setup')
 	{
@@ -291,7 +297,7 @@ def packageName
 					{
 							packageName = MiscUtils.getValueFromMap(packageMap,module)
 							
-							def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
+							moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
 							
 							println("packageName : $packageName")
 							
@@ -354,14 +360,12 @@ def packageName
 				{
 					packageName = MiscUtils.getValueFromMap(packageMap,module)
 					
-					def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
+					moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
 					
 					Logger.info("packageName : $packageName")
 					
 					dir(moduleTarPath)
 					{
-								def server = Artifactory.server "ArtifactDemo"
-								def buildInfo = Artifactory.newBuildInfo()
 								def rtMaven = Artifactory.newMavenBuild()
 								buildInfo.env.capture = true
 								buildInfo.env.collect()
@@ -427,7 +431,7 @@ def packageName
 			
 				Logger.info("Entering Deployment stage")
 						
-				ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
+				//ArtifactoryUtils = load("${currentDir}/pipeline-scripts/utils/ArtifactoryUtils.groovy")
 				
 				//PipeConstants = load("${currentDir}/pipeline-scripts/utils/PipeConstants.groovy")
 				
@@ -447,7 +451,7 @@ def packageName
 							{
 								packageName = MiscUtils.getValueFromMap(packageMap,module)
 								
-								def moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
+								moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
 								
 								println("packageName : $packageName")
 								
@@ -455,8 +459,8 @@ def packageName
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r  "${WORKSPACE}/${moduleTarPath}/${packageName}" rameshrangaswamy1@34.93.202.223:~/apache-tomcat-8.5.37/webapps/
-								sshpass -p "12345" ssh rameshrangaswamy1@34.93.202.223 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
+								sshpass -p "12345" scp -r -v  ~/.jenkins/workspace/CI_CD_Demo/demo/target/demo-1.0-SNAPSHOT.jar rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" ssh rameshrangaswamy1@34.93.239.237 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
 						}
