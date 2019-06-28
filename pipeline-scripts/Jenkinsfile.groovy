@@ -382,11 +382,11 @@ def buildInfo = Artifactory.newBuildInfo()
 							
 							//buildInfo.env.capture = true
 							
-							println("${WORKSPACE}/${moduleTarPath}*.war")
+							println("${WORKSPACE}/${moduleTarPath}/*.war")
 							
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "**/target/*.war",
+											"pattern": "${WORKSPACE}/${moduleTarPath}/*.war",
 											"target": "libs-snapshot-local/",
 											"recursive": "false"
 												  }]
@@ -459,7 +459,7 @@ def buildInfo = Artifactory.newBuildInfo()
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r -v -o 'StrictHostKeyChecking no' ~/jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" scp -r -v -o 'StrictHostKeyChecking no' /home/rameshrangaswamy1/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
 								#sshpass -p "12345" ssh rameshrangaswamy1@34.93.239.237 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
