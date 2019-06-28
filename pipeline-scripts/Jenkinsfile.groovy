@@ -192,7 +192,7 @@ def buildInfo = Artifactory.newBuildInfo()
 				Logger.info("Exiting UTs stage")
 			}
 	}
-	/*
+	
 	stage('sonarAnalysis')
 	{    
 		try
@@ -259,8 +259,8 @@ def buildInfo = Artifactory.newBuildInfo()
 			{
 				Logger.info("Exiting SonarAnalysis stage")
 			}
-	}*/
-	/*
+	}
+	
 	stage('Packaging And Archiving') 
 	{
 	
@@ -323,8 +323,8 @@ def buildInfo = Artifactory.newBuildInfo()
 			{
 				Logger.info("Exiting Packaging And Archiving")
 			}
-	}*/
-		/*	
+	}
+			
 	stage('Publish to Artifactory') 
 	{
 	
@@ -417,8 +417,8 @@ def buildInfo = Artifactory.newBuildInfo()
 			{
 				Logger.info("Exiting Publish to Artifactory stage")
 			}
-	} */
-/*
+	} 
+
 		stage('Deployment')
 	{
 		try
@@ -459,8 +459,8 @@ def buildInfo = Artifactory.newBuildInfo()
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r -v  ~/.jenkins/workspace/CI_CD_Demo/demo/target/demo-1.0-SNAPSHOT.jar rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
-								sshpass -p "12345" ssh rameshrangaswamy1@34.93.239.237 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
+								sshpass -p "12345" scp -r  "${WORKSPACE}/${moduleTarPath}/${packageName}" rameshrangaswamy1@34.93.202.223:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" ssh rameshrangaswamy1@34.93.202.223 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
 						}
@@ -475,6 +475,6 @@ def buildInfo = Artifactory.newBuildInfo()
 			{
 				Logger.info("Exiting Deployment stage")
 			}
-	}*/
+	}
 	
 }
