@@ -365,27 +365,34 @@ def packageName
 								buildInfo.env.capture = true
 								buildInfo.env.collect()
 
-								def uploadSpec = """{
-								"files": [
-								{
-								"pattern": "**/target/*.jar",
-								"target": "libs-snapshot-local"
-								}, {
-								"pattern": "**/target/*.pom",
-								"target": "libs-snapshot-local"
-								}, {
-								"pattern": "**/target/*.war",
-								"target": "libs-snapshot-local"
-								}
-								]
-								}"""
-								// Upload to Artifactory.
-								server.upload spec: uploadSpec, buildInfo: buildInfo
-						println("$uploadSpec")
-
-								//buildInfo.retention maxBuilds: 10, maxDays: 7, deleteBuildArtifacts: true
-								// Publish build info.
-								server.publishBuildInfo buildInfo
+						script
+						{						
+							Logger.info("packageName : $packageName")
+							
+							rtMaven.tool = 'maven'
+							
+							rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
+													
+							def buildInfo = Artifactory.newBuildInfo()
+							
+							buildInfo.env.capture = true
+							
+							println("${WORKSPACE}/${moduleTarPath}/${packageName}")
+							
+							def uploadSpec = """{
+											"files": [{
+											"pattern": "**/target/*.war",
+											"target": "libs-snapshot-local/",
+											"recursive": "false"
+												  }]
+											}"""
+							server.upload spec: uploadSpec, buildInfo: buildInfo 
+							
+							server.publishBuildInfo buildInfo
+							
+							println("${WORKSPACE}/${moduleTarPath}/${packageName}")
+							
+						}
 							
 					}
 	
