@@ -381,12 +381,10 @@ def buildInfo = Artifactory.newBuildInfo()
 							//def buildInfo = Artifactory.newBuildInfo()
 							
 							//buildInfo.env.capture = true
-							
-							println("${WORKSPACE}/${moduleTarPath}/*.war")
-							
+								
 							def uploadSpec = """{
 											"files": [{
-											"pattern": "${WORKSPACE}/${moduleTarPath}/*.war",
+											"pattern": "${WORKSPACE}/${moduleTarPath}/*.tar",
 											"target": "libs-snapshot-local/",
 											"recursive": "false"
 												  }]
@@ -394,8 +392,6 @@ def buildInfo = Artifactory.newBuildInfo()
 							server.upload spec: uploadSpec, buildInfo: buildInfo 
 							
 							server.publishBuildInfo buildInfo
-							
-							println("${WORKSPACE}/${moduleTarPath}/${packageName}")
 							
 						}
 							
