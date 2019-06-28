@@ -459,7 +459,7 @@ def buildInfo = Artifactory.newBuildInfo()
 							{
 								sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r -v  ~/.jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
+								sshpass -p "12345" scp -r -v  ~/jenkins/workspace/CI_CD_Demo/sau-jen/target/sau-0.0.1-SNAPSHOT.war rameshrangaswamy1@34.93.239.237:~/apache-tomcat-8.5.37/webapps/
 								#sshpass -p "12345" ssh rameshrangaswamy1@34.93.239.237 "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
 								"""
 							}
