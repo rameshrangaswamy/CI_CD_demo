@@ -409,4 +409,3 @@ def sendEmail(status,stageName,checkpoint)
 }
 
 return this;
-
