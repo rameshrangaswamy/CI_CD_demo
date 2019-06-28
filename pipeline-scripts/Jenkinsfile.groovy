@@ -373,9 +373,9 @@ def packageName
 							
 							rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
 													
-							def buildInfo = Artifactory.newBuildInfo()
+							//def buildInfo = Artifactory.newBuildInfo()
 							
-							buildInfo.env.capture = true
+							//buildInfo.env.capture = true
 							
 							println("${WORKSPACE}/${moduleTarPath}/${packageName}")
 							
