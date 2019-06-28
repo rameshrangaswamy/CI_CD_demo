@@ -32,6 +32,10 @@ def server = Artifactory.server "ArtifactDemo"
 
 def buildInfo = Artifactory.newBuildInfo()
 
+def SSH_USER_NAME
+
+def DEPLOY_HOST
+
 	
 	stage('Git clone and setup')
 	{
@@ -305,7 +309,7 @@ def buildInfo = Artifactory.newBuildInfo()
 							{
 								sh"""
 								#!/bin/bash
-								tar cvf "${packageName}-${gitCommit}-b${buildNum}.tar" *
+								tar cvf "${packageName}-b${buildNum}.tar" "$packageName"
 								"""
 							}
 
@@ -435,6 +439,10 @@ def buildInfo = Artifactory.newBuildInfo()
 				
 				moduleProp = readProperties file: 'pipeline-scripts/properties/modules.properties'	
 				
+				SSH_USER_NAME  = moduleProp['SSH_USER_NAME']	
+				
+				DEPLOY_HOST = moduleProp['DEPLOY_HOST']
+				
 				def packageNames = moduleProp['PACKAGE_NAME']
 				
 				packageMap = MiscUtils.stringToMap(packageNames)
@@ -453,11 +461,14 @@ def buildInfo = Artifactory.newBuildInfo()
 								
 							dir(moduleTarPath)
 							{
-								sh"""
+							
+								copyPackageToInstaller(packageName,SSH_USER_NAME,DEPLOY_HOST)
+								
+								#sh"""
 								#!/bin/bash
-								sshpass -p "12345" scp -r -v -o 'StrictHostKeyChecking no' /home/rameshrangaswamy1/workspace/CI_CD_Demo/${packageName}/target/*.war rameshrangaswamy1@34.93.252.221:~/apache-tomcat-8.5.42/webapps/
-								sshpass -p "12345" ssh -v -o 'StrictHostKeyChecking no' rameshrangaswamy1@34.93.252.221 "/home/rameshrangaswamy1/apache-tomcat-8.5.42/bin/startup.sh"
-								"""
+								#sshpass -p "12345" scp -r -v -o 'StrictHostKeyChecking no' /home/rameshrangaswamy1/workspace/CI_CD_Demo/${packageName}/target/*.war rameshrangaswamy1@34.93.252.221:~/apache-tomcat-8.5.42/webapps/
+								#sshpass -p "12345" ssh -v -o 'StrictHostKeyChecking no' rameshrangaswamy1@34.93.252.221 "/home/rameshrangaswamy1/apache-tomcat-8.5.42/bin/startup.sh"
+								#"""
 							}
 						}
 		}
@@ -473,4 +484,30 @@ def buildInfo = Artifactory.newBuildInfo()
 			}
 	}
 	
+}
+
+//Function to copy the package to installer,untar the package and remove the .tar file
+def copyPackageToInstaller(packageName,SSH_USER_NAME,DEPLOY_HOST) {
+	withCredentials([string(credentialsId: 'dev-pem', variable: 'secret')]) {
+        sh """
+            #!/bin/bash
+			ssh -i $secret -o StrictHostKeyChecking=no $SSH_USER_NAME@$DEPLOY_HOST
+			
+			
+			scp -i $secret -o StrictHostKeyChecking=no -o "proxycommand ssh -i $secret -W %h:%p $SSH_USER_NAME@$DEPLOY_HOST" \
+			
+			${packageName}*.tar $SSH_USER_NAME@$INSTALLER_HOST:~/apache-tomcat-8.5.42/webapps/${packageName}.tar
+			
+			[ \$? -ne 0 ] && exit 1
+			
+			ssh -i $secret $SSH_USER_NAME@$INSTALLER_HOST -o StrictHostKeyChecking=no -o "proxycommand ssh -W %h:%p -i $secret $SSH_USER_NAME@$DEPLOY_HOST" \
+			
+			"sudo tar -xvf ~/apache-tomcat-8.5.42/webapps/${packageName}.tar --directory ~/apache-tomcat-8.5.42/webapps/${packageName}.tar; \
+			
+			rm ~/apache-tomcat-8.5.42/webapps/${packageName}.tar"
+			
+			[ \$? -ne 0 ] && exit 1
+            exit 0
+        """
+    }
 }
