@@ -175,7 +175,7 @@ def buildInfo = Artifactory.newBuildInfo()
 				
 				dir(packageBuildPath)
 				{
-					sh "'${mavenHome}/bin/mvn' clean test"
+					sh "'${mavenHome}/bin/mvn' test"
 				}
 			}
 		}
@@ -382,7 +382,7 @@ def buildInfo = Artifactory.newBuildInfo()
 							
 							//buildInfo.env.capture = true
 							
-							println("${WORKSPACE}/${moduleTarPath}/${packageName}")
+							println("${WORKSPACE}/${moduleTarPath}*.war")
 							
 							def uploadSpec = """{
 											"files": [{
