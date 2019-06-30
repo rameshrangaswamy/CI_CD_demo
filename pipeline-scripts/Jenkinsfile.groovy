@@ -36,7 +36,7 @@ def SSH_USER_NAME
 
 def DEPLOY_HOST
 
-	
+		/** Stage to git clone adn setup environment in jenkins workspace   */	
 	stage('Git clone and setup')
 	{
 		try 
@@ -57,7 +57,7 @@ def DEPLOY_HOST
 
 			MiscUtils = load("${currentDir}/pipeline-scripts/utils/MiscUtils.groovy")
 			
-			println("Reading modules.properties : $moduleProp")
+			Logger.info("Reading modules.properties : $moduleProp")
 			
 			// Get the commit hash of PR branch 
 			
@@ -75,9 +75,9 @@ def DEPLOY_HOST
 			
 			masterCommit = masterCommit.replaceAll("[\n\r]", "")
 			
-			println("branchCommit : $branchCommit")
+			Logger.info("branchCommit : $branchCommit")
 			
-			println("masterCommit : $masterCommit")
+			Logger.info("masterCommit : $masterCommit")
 			
 			def changeSet = MiscUtils.getChangeSet(branchCommit,masterCommit)
 			
@@ -89,7 +89,7 @@ def DEPLOY_HOST
 			
 			currentModules = MiscUtils.validateModules(changedModules,serviceModulesList)
 			
-			println("Service modules changed : $currentModules")	
+			Logger.info("Service modules changed : $currentModules")	
 			
 			MiscUtils.setDisplayName(buildNum, currentModules)
 		}
@@ -106,7 +106,7 @@ def DEPLOY_HOST
 			Logger.info("Exiting Git clone and setup stage")
 		}
 	}
-		
+		/** Stage to clean build the module   */	
 	stage('Build')
 	{    
 		try
@@ -125,11 +125,11 @@ def DEPLOY_HOST
 				
 				def packagePath = moduleProp['DEMO_PACKAGEPATH']
 				
-				println("packagePath : $packagePath")
+				Logger.info("packagePath : $packagePath")
 				
 				packagePathMap = MiscUtils.stringToMap(packagePath)
 				
-				println("packagePathMap : $packagePathMap")
+				Logger.info("packagePathMap : $packagePathMap")
 				
 				def packageBuildPath = MiscUtils.getBuildPath(packagePathMap,module)
 				
@@ -154,7 +154,7 @@ def DEPLOY_HOST
 				Logger.info("Exiting Build stage")
 			}
 	}
-	
+		/** Stage to run UTs  */	
 	stage('UTs')
 	{    
 		try
@@ -196,7 +196,7 @@ def DEPLOY_HOST
 				Logger.info("Exiting UTs stage")
 			}
 	}
-	
+		/** Stage to do Statics code Analysis of the source code  */	
 	stage('sonarAnalysis')
 	{    
 		try
@@ -243,7 +243,7 @@ def DEPLOY_HOST
 						
 						if(quality.status != 'OK')
 						{
-							println("Quality gate check failed")
+							Logger.info("Quality gate check failed")
 							
 							throw new Exception("Quality Gate check failed")
 						}
@@ -264,7 +264,7 @@ def DEPLOY_HOST
 				Logger.info("Exiting SonarAnalysis stage")
 			}
 	}
-	
+		/** Stage to package the binaries and archiving as tar file  */
 	stage('Packaging And Archiving') 
 	{
 	
@@ -303,7 +303,7 @@ def DEPLOY_HOST
 							
 							moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
 							
-							println("packageName : $packageName")
+							Logger.info("packageName : $packageName")
 							
 							dir(moduleTarPath)
 							{
@@ -328,7 +328,7 @@ def DEPLOY_HOST
 				Logger.info("Exiting Packaging And Archiving")
 			}
 	}
-			
+		/** Stage to publish the package to jfrog artifactory  */	
 	stage('Publish to Artifactory') 
 	{
 	
@@ -418,8 +418,8 @@ def DEPLOY_HOST
 				Logger.info("Exiting Publish to Artifactory stage")
 			}
 	} 
-
-		stage('Deployment')
+		/** Stage to copy the package to host machine and Deploy  */
+	stage('Deployment')
 	{
 		try
 		{
@@ -456,9 +456,7 @@ def DEPLOY_HOST
 								packageName = MiscUtils.getValueFromMap(packageMap,module)
 								
 								moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
-								
-								println("packageName : $packageName")
-								
+																
 							dir(moduleTarPath)
 							{
 							
