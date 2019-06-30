@@ -462,7 +462,7 @@ def DEPLOY_HOST
 							dir(moduleTarPath)
 							{
 							
-								copyPackageToInstaller(packageName,SSH_USER_NAME,DEPLOY_HOST)
+								MiscUtils.copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST)
 						
 							}
 						}
@@ -479,22 +479,4 @@ def DEPLOY_HOST
 			}
 	}
 	
-}
-
-//Function to copy the package to installer,untar the package and remove the .tar file
-def copyPackageToInstaller(packageName,SSH_USER_NAME,DEPLOY_HOST) {
-	withCredentials([string(credentialsId: 'artifact-machine', variable: 'Jenkinspass')]) {
-        sh """
-            #!/bin/bash
-			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST
-			
-			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/*-SNAPSHOT.*ar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.42/webapps/
-			
-			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "/home/rameshrangaswamy1/apache-tomcat-8.5.37/bin/startup.sh"
-			
-			[ \$? -ne 0 ] && exit 1
-			
-            exit 0
-        """
-    }
 }
