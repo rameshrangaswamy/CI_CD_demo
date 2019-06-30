@@ -487,9 +487,11 @@ def copyPackageToInstaller(packageName,SSH_USER_NAME,DEPLOY_HOST) {
         sh """
             #!/bin/bash
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST
-			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/*-SNAPSHOT.*ar \ 
-			$SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.42/webapps/*-SNAPSHOT.*ar
+			
+			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/*-SNAPSHOT.*ar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.42/webapps/*-SNAPSHOT.*ar
+			
 			[ \$? -ne 0 ] && exit 1
+			
             exit 0
         """
     }
