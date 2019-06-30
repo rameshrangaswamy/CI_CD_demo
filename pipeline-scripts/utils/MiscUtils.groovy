@@ -329,18 +329,18 @@ def extractInts(input)
 }
 
 //Function to copy the package to installer,untar the package and remove the .tar file
-def copyPackageToInstaller(packageName,SSH_USER_NAME,BASTION_HOST,INSTALLER_HOST) {
-    withCredentials([file(credentialsId: 'devus1-ubuntu-pem', variable: 'jenkinsKeyFile')]) {
+def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
+	withCredentials([string(credentialsId: 'artifact-machine', variable: 'Jenkinspass')]) {
         sh """
             #!/bin/bash
-			ssh -i $jenkinsKeyFile -o StrictHostKeyChecking=no $SSH_USER_NAME@$BASTION_HOST
-			scp -i $jenkinsKeyFile -o StrictHostKeyChecking=no -o "proxycommand ssh -i $jenkinsKeyFile -W %h:%p $SSH_USER_NAME@$BASTION_HOST" \
-			${packageName}*.tar $SSH_USER_NAME@$INSTALLER_HOST:/usr/local/lib/xera/packages/${packageName}.tar
+			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST
+			
+			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/*-SNAPSHOT.*ar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.42/webapps/
+			
+			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "~/apache-tomcat-8.5.42/bin/startup.sh"
+			
 			[ \$? -ne 0 ] && exit 1
-			ssh -i $jenkinsKeyFile $SSH_USER_NAME@$INSTALLER_HOST -o StrictHostKeyChecking=no -o "proxycommand ssh -W %h:%p -i $jenkinsKeyFile $SSH_USER_NAME@$BASTION_HOST" \
-			"sudo tar -xvf /usr/local/lib/xera/packages/${packageName}.tar --directory /usr/local/lib/xera/packages; \
-			rm /usr/local/lib/xera/packages/${packageName}.tar"
-			[ \$? -ne 0 ] && exit 1
+			
             exit 0
         """
     }
