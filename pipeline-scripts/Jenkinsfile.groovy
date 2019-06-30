@@ -491,11 +491,11 @@ def copyPackageToInstaller(packageName,SSH_USER_NAME,DEPLOY_HOST) {
 			
 			scp -i $secret -o StrictHostKeyChecking=no -o "proxycommand ssh -i $secret -W %h:%p $SSH_USER_NAME@$DEPLOY_HOST" \
 			
-			${packageName}*.tar $SSH_USER_NAME@$INSTALLER_HOST:~/apache-tomcat-8.5.42/webapps/${packageName}.tar
+			${packageName}*.tar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.42/webapps/${packageName}.tar
 			
 			[ \$? -ne 0 ] && exit 1
 			
-			ssh -i $secret $SSH_USER_NAME@$INSTALLER_HOST -o StrictHostKeyChecking=no -o "proxycommand ssh -W %h:%p -i $secret $SSH_USER_NAME@$DEPLOY_HOST" \
+			ssh -i $secret $SSH_USER_NAME@$DEPLOY_HOST -o StrictHostKeyChecking=no -o "proxycommand ssh -W %h:%p -i $secret $SSH_USER_NAME@$DEPLOY_HOST" \
 			
 			"sudo tar -xvf ~/apache-tomcat-8.5.42/webapps/${packageName}.tar --directory ~/apache-tomcat-8.5.42/webapps/${packageName}.tar; \
 			
