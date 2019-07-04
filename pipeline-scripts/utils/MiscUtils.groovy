@@ -341,7 +341,7 @@ def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "~/apache-tomcat-8.5.42/webapps/script.sh"
 			elif [ ${packageName} == sau-jen ]
 			then
-			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$34.93.144.98 "~/apache-tomcat-8.5.42/webapps/bin/script.sh"
+			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "~/apache-tomcat-8.5.42/webapps/bin/script.sh"
 			else
 			echo "${packageName} : not-deployed"
 			fi
