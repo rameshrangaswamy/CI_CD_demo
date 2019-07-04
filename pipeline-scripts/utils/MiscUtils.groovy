@@ -339,11 +339,11 @@ def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
 			if [[ ${packageName} = "spring" ]];
 			then
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "~/apache-tomcat-8.5.42/webapps/script.sh"
-			elif [ ${packageName} = "demo" ]];
+			elif [[ ${packageName} = "demo" ]];
 			then
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "~/apache-tomcat-8.5.42/webapps/bin/script.sh"
 			else
-			echo "${packageName} : not-deployed"
+			echo "${packageName} : deployed"
 			fi
 			[ \$? -ne 0 ] && exit 1
 			
