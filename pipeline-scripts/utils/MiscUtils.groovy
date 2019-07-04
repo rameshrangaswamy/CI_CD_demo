@@ -335,19 +335,16 @@ def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
             #!/bin/bash
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST 
 			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/*-SNAPSHOT.*ar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.42/webapps/
-			if [[ ${packageName} = "spring" ]]
-			then
+		if [[ ${packageName} = "spring" ]];then
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "~/apache-tomcat-8.5.42/webapps/script.sh"
-			elif [[ ${packageName} = "demo" ]]
-			then
+		elif [[ ${packageName} = "demo" ]];then
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "~/apache-tomcat-8.5.42/webapps/bin/script.sh"
-			else
+		else
 			echo "${packageName} : deployed"
-			fi
+		fi
 			[ \$? -ne 0 ] && exit 1
-			
-            exit 0
-        """
+			exit 0
+		"""
     }
 }
 
