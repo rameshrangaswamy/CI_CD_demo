@@ -333,20 +333,16 @@ def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
 	withCredentials([string(credentialsId: 'artifact-machine', variable: 'Jenkinspass')]) {
         sh """
             #!/bin/bash
-	    chmod +x -R ${env.WORKSPACE}/../${env.JOB_NAME}@script
-	    ${env.WORKSPACE}/../${env.JOB_NAME}@script/script.sh
-			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST 
+			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST
+			
 			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/*-SNAPSHOT.*ar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.42/webapps/
-		if [[ "${packageName}" = "spring" ]];then
+			
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "~/apache-tomcat-8.5.42/webapps/script.sh"
-		elif [[ "${packageName}" = "demo" ]];then
-			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "~/apache-tomcat-8.5.42/webapps/bin/script.sh"
-		else
-			echo "${packageName} : deployed"
-		fi
+			
 			[ \$? -ne 0 ] && exit 1
-			exit 0
-		"""	
+			
+            exit 0
+        """
     }
 }
 
