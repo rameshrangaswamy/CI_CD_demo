@@ -332,7 +332,6 @@ def extractInts(input)
 
 //Function to copy the package to installer,untar the package and remove the .tar file
 def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
-	if(packageName == 'sau-jen'){
 	withCredentials([string(credentialsId: 'artifact-machine', variable: 'Jenkinspass')]) {
         sh """
             #!/bin/bash
@@ -348,28 +347,7 @@ def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
         """
     }
 }
-}
 
-
-//Function to copy the package to installer,untar the package and remove the .tar file
-def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
-	if(packageName == 'spring'){
-	withCredentials([string(credentialsId: 'artifact-machine', variable: 'Jenkinspass')]) {
-        sh """
-            #!/bin/bash
-			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST
-			
-			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/*-SNAPSHOT.*ar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.42/webapps/
-			
-			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST screen -dm -S testing "~/apache-tomcat-8.5.42/bin/startup.sh"
-			
-			[ \$? -ne 0 ] && exit 1
-			
-            exit 0
-        """
-    }
-}
-}
 
 //Function to get the current version of the package in the respective host
 def getCurrentVersion(packageName,SSH_USER_NAME,BASTION_HOST,INSTALLER_HOST,hostName) 
