@@ -328,6 +328,8 @@ def extractInts(input)
 	return input.replaceAll("[^0-9]", "")
 }
 
+	
+if(${packageName} == 'spring' ){
 //Function to copy the package to installer,untar the package and remove the .tar file
 def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
 	withCredentials([string(credentialsId: 'artifact-machine', variable: 'Jenkinspass')]) {
@@ -344,6 +346,27 @@ def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
             exit 0
         """
     }
+}
+}
+
+if(${packageName} == 'sau-jen' ){
+//Function to copy the package to installer,untar the package and remove the .tar file
+def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
+	withCredentials([string(credentialsId: 'artifact-machine', variable: 'Jenkinspass')]) {
+        sh """
+            #!/bin/bash
+			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST
+			
+			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/*-SNAPSHOT.*ar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.42/webapps/
+			
+			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST screen -dm -S testing "~/apache-tomcat-8.5.42/bin/startup.sh"
+			
+			[ \$? -ne 0 ] && exit 1
+			
+            exit 0
+        """
+    }
+}
 }
 
 //Function to get the current version of the package in the respective host
