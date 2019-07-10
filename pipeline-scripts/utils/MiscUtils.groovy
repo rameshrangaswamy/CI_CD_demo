@@ -329,7 +329,7 @@ def extractInts(input)
 }
 
 	
-if(${packageName} == 'spring' ){
+if(packageName == 'sau-jen'){
 //Function to copy the package to installer,untar the package and remove the .tar file
 def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
 	withCredentials([string(credentialsId: 'artifact-machine', variable: 'Jenkinspass')]) {
@@ -349,7 +349,7 @@ def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
 }
 }
 
-if(${packageName} == 'sau-jen' ){
+if(packageName == 'spring'){
 //Function to copy the package to installer,untar the package and remove the .tar file
 def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
 	withCredentials([string(credentialsId: 'artifact-machine', variable: 'Jenkinspass')]) {
