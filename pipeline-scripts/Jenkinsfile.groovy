@@ -480,7 +480,7 @@ def DEPLOY_HOST
 																"pattern": "${packageName}-b${buildNum}.tar",
 																"target": "libs-snapshot-local/",
 																"recursive": "false",
-																"flat" : "true",
+																"flat" : "true"
 																	  }]
 																}"""
 												server.download spec: downloadSpec 
