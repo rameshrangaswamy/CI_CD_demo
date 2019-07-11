@@ -456,12 +456,11 @@ def DEPLOY_HOST
 								packageName = MiscUtils.getValueFromMap(packageMap,module)
 								
 								moduleTarPath = MiscUtils.getTarPath(tarPathMap,module)	
-								println("${packageName}-b${buildNum}.tar")
+								//println("${packageName}-b${buildNum}.tar")
 																
 							dir(moduleTarPath)
 							{
-										println("${packageName}-b${buildNum}.tar")
-										Logger.info("Downloading Artifact : $packageName")
+										Logger.info("Downloading the latest package : ${packageName}-b${buildNum}.tar")
 										rtDownload (
 										serverId: "ArtifactDemo",
 										spec:
