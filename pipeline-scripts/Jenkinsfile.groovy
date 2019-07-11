@@ -309,7 +309,7 @@ def DEPLOY_HOST
 							{
 								sh"""
 								#!/bin/bash
-								tar cvf "${packageName}-b${buildNum}.tar" *
+								tar cvf "${packageName}-b${buildNum}.tar" *-SNAPSHOT.*
 								"""
 							}
 
