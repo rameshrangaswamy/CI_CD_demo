@@ -342,7 +342,7 @@ String buildNum = currentBuild.number.toString()
 			
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST tar -xvf ~/apache-tomcat-8.5.43/webapps/${packageName}-b${buildNum}.tar --directory ~/apache-tomcat-8.5.43/webapps; rm -rf ~/apache-tomcat-8.5.43/webapps/${packageName}-b${buildNum}.tar
 			
-			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST screen -dm -S testing "~/apache-tomcat-8.5.43/webapps/./script.sh ${packageName}"
+			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST "~/apache-tomcat-8.5.43/webapps/./script.sh ${packageName}"
 			
 			[ \$? -ne 0 ] && exit 1
 			
