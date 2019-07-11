@@ -466,7 +466,7 @@ def DEPLOY_HOST
 											"""{
 											  "files": [
 												{
-												  "pattern": "libs-snapshot-local/demo-b479.tar",
+												  "pattern": "libs-snapshot-local/${packageName}-b${buildNum}.tar",
 												  "target": "libs-snapshot-local/"
 												}
 											 ]
