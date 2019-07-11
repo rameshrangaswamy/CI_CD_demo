@@ -459,35 +459,19 @@ def DEPLOY_HOST
 																
 							dir(moduleTarPath)
 							{
-													//def rtMaven = Artifactory.newMavenBuild()
-													//buildInfo.env.capture = true
-													//buildInfo.env.collect()
-													Logger.info("Downloading the artifact : $packageName")
-
-											script
-											{						
-												
-												//rtMaven.tool = 'maven'
-												
-												//rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
-																		
-												//def buildInfo = Artifactory.newBuildInfo()
-												
-												//buildInfo.env.capture = true
-													
-												def downloadSpec = """{
-																"files": [{
-																"pattern": "demo-b478.tar",
-																"target": "libs-snapshot-local/",
-																"recursive": "false",
-																"flat" : "true"
-																	  }]
-																}"""
-												server.download spec: downloadSpec 
-												
-												//server.publishBuildInfo buildInfo buildInfo: buildInfo 
-												
-											}
+										Logger.info("Downloading Artifact : $packageName")
+										rtDownload (
+										serverId: "ArtifactDemo",
+										spec:
+											"""{
+											  "files": [
+												{
+												  "pattern": "libs-snapshot-local/demo-b479.tar",
+												  "target": "libs-snapshot-local/"
+												}
+											 ]
+											}"""
+									)
 							
 								MiscUtils.copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST)
 						
