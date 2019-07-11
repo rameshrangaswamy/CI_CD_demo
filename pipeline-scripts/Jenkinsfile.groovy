@@ -462,11 +462,10 @@ def DEPLOY_HOST
 													def rtMaven = Artifactory.newMavenBuild()
 													buildInfo.env.capture = true
 													buildInfo.env.collect()
-													Logger.info("Downloading the Artifact from JFrog")
+													Logger.info("Downloading the artifact : $packageName")
 
 											script
 											{						
-												Logger.info("Downloading the package : $packageName")
 												
 												rtMaven.tool = 'maven'
 												
@@ -478,14 +477,15 @@ def DEPLOY_HOST
 													
 												def downloadSpec = """{
 																"files": [{
-																"pattern": "${WORKSPACE}/${moduleTarPath}/*.tar",
+																"pattern": "${packageName}-b${buildNum}.tar",
 																"target": "libs-snapshot-local/",
-																"recursive": "false"
+																"recursive": "false",
+																"flat" : "true",
 																	  }]
 																}"""
 												server.download spec: downloadSpec 
 												
-												//server.publishBuildInfo buildInfo
+												//server.publishBuildInfo buildInfo buildInfo: buildInfo 
 												
 											}
 							
