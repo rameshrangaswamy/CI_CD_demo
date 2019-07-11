@@ -459,6 +459,35 @@ def DEPLOY_HOST
 																
 							dir(moduleTarPath)
 							{
+													def rtMaven = Artifactory.newMavenBuild()
+													buildInfo.env.capture = true
+													buildInfo.env.collect()
+													Logger.info("Downloading the Artifact from JFrog")
+
+											script
+											{						
+												Logger.info("Downloading the package : $packageName")
+												
+												rtMaven.tool = 'maven'
+												
+												rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
+																		
+												//def buildInfo = Artifactory.newBuildInfo()
+												
+												//buildInfo.env.capture = true
+													
+												def downloadSpec = """{
+																"files": [{
+																"pattern": "${WORKSPACE}/${moduleTarPath}/*.tar",
+																"target": "libs-snapshot-local/",
+																"recursive": "false"
+																	  }]
+																}"""
+												server.download spec: downloadSpec 
+												
+												//server.publishBuildInfo buildInfo
+												
+											}
 							
 								MiscUtils.copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST)
 						
