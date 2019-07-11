@@ -337,9 +337,11 @@ def copyPackageToHost(packageName,SSH_USER_NAME,DEPLOY_HOST) {
             #!/bin/bash
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST
 			
-			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/*-SNAPSHOT.*ar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.42/webapps/
+			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/libs-snapshot-local/${packageName}-b${buildNum}.tar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.43/webapps/ 
 			
-			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST screen -dm -S testing "~/apache-tomcat-8.5.42/webapps/script.sh"
+			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST tar -xvf ~/apache-tomcat-8.5.43/webapps/${packageName}-b${buildNum}.tar
+			
+			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST screen -dm -S testing "~/apache-tomcat-8.5.43/webapps/script.sh"
 			
 			[ \$? -ne 0 ] && exit 1
 			
