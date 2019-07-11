@@ -459,17 +459,17 @@ def DEPLOY_HOST
 																
 							dir(moduleTarPath)
 							{
-													def rtMaven = Artifactory.newMavenBuild()
-													buildInfo.env.capture = true
-													buildInfo.env.collect()
+													//def rtMaven = Artifactory.newMavenBuild()
+													//buildInfo.env.capture = true
+													//buildInfo.env.collect()
 													Logger.info("Downloading the artifact : $packageName")
 
 											script
 											{						
 												
-												rtMaven.tool = 'maven'
+												//rtMaven.tool = 'maven'
 												
-												rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
+												//rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
 																		
 												//def buildInfo = Artifactory.newBuildInfo()
 												
@@ -477,7 +477,7 @@ def DEPLOY_HOST
 													
 												def downloadSpec = """{
 																"files": [{
-																"pattern": "${packageName}-b${buildNum}.tar",
+																"pattern": "demo-b478.tar",
 																"target": "libs-snapshot-local/",
 																"recursive": "false",
 																"flat" : "true"
