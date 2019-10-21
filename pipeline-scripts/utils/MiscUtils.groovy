@@ -338,7 +338,7 @@ String buildNum = currentBuild.number.toString()
             #!/bin/bash
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST
 			
-			sshpass -p $Jenkinspass scp -r -v -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/libs-snapshot-local/${packageName}-b${buildNum}.tar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.37/webapps/ 
+			sshpass -p $Jenkinspass scp -r -o 'StrictHostKeyChecking no' $WORKSPACE/${packageName}/target/libs-snapshot-local/${packageName}-b${buildNum}.tar $SSH_USER_NAME@$DEPLOY_HOST:~/apache-tomcat-8.5.37/webapps/ 
 			
 			sshpass -p $Jenkinspass ssh $SSH_USER_NAME@$DEPLOY_HOST tar -xvf ~/apache-tomcat-8.5.37/webapps/${packageName}-b${buildNum}.tar --directory ~/apache-tomcat-8.5.37/webapps; rm -rf ~/apache-tomcat-8.5.37/webapps/${packageName}-b${buildNum}.tar
 			
