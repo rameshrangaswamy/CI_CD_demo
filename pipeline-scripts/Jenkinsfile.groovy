@@ -329,7 +329,7 @@ def DEPLOY_HOST
 			}
 	}
 		/** Stage to publish the package to jfrog artifactory  */	
-	stage('Publish to Artifactory') 
+	stage('Publish package to Artifactory') 
 	{
 	
 		try
@@ -419,7 +419,7 @@ def DEPLOY_HOST
 			}
 	} 
 		/** Stage to copy the package to host machine and Deploy  */
-	stage('Deployment')
+	stage('Download Package and Deployment')
 	{
 		try
 		{
