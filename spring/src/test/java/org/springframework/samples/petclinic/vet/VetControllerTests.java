@@ -52,8 +52,8 @@ public class VetControllerTests {
     @Before
     public void setup() {
         Vet james = new Vet();
-        james.setFirstName("James");
-        james.setLastName("Tony");
+        james.setFirstName("Tony");
+        james.setLastName("Carter");
         james.setId(1);
         Vet helen = new Vet();
         helen.setFirstName("Helen");
